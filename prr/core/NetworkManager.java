@@ -18,6 +18,7 @@ public class NetworkManager {
   /** The network itself. */
   private Network _network = new Network();
   //FIXME  addmore fields if needed
+  private String _filename;
   
   public Network getNetwork() {
     return _network;
