@@ -63,3 +63,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     return false;
   }
 }
+
+
+  public boolean isTerminlaKey
+  

@@ -32,13 +32,18 @@ class DoRegisterTerminal extends Command<Network> {
     String type = stringField("type");
     String idClient = stringField("idClient");
 
+//??????????????
+    try{
 
-/*
-    switch(type){
-      case "BASIC":
-      _register.registerBasicTerminal(id,)
-    }
     
-*/
+
+    }
+    if(receiver.findClient(idClient)){
+      switch(type){
+        case "BASIC":
+        _register.registerBasicTerminal(id,)
+      }
+    
+
   }
 }
