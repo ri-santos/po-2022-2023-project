@@ -8,5 +8,7 @@ public class Notification {
         _type = type;
     }
 
-    public String toString(){}
+    public String toString(){
+        return (_type + _notifyingTerminal.getId());
+    }
 }

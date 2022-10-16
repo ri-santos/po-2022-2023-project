@@ -1,6 +1,6 @@
 package prr.core;
 
-public abstract class TariffPlan {
+public class TariffPlan {
     private String _name;
 
     public TariffPlan(String name){

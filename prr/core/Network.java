@@ -1,6 +1,7 @@
 package prr.core;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.io.IOException;
 import prr.core.exception.UnrecognizedEntryException;
 
@@ -13,11 +14,17 @@ public class Network implements Serializable {
 
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202208091753L;
-  
+  private HashSet<Client> _clients;
+  private HashSet<Terminal> _terminals;
+  private HashSet<TariffPlan> _tariffPlans;
+
+
   // FIXME define attributes
   // FIXME define contructor(s)
   // FIXME define methods
   
+
+
   /**
    * Read text input file and create corresponding domain entities.
    * 

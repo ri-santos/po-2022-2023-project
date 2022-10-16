@@ -1,7 +1,7 @@
 package prr.core;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashSet;
 
 
 // FIXME add more import if needed (cannot import from pt.tecnico or prr.app)
@@ -19,14 +19,29 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   private double _debt;
   private double _payments;
   private TerminalMode _mode;
-  private Collection<Terminal> _friends;
-  private Collection<Client> _toNotify;
+  private HashSet<Terminal> _friends;
+  private HashSet<Client> _toNotify;
   
   
   // FIXME define attributes
   // FIXME define contructor(s)
   // FIXME define methods
   
+  public Terminal(String id, Client owner){
+    _id = id;
+    _owner = owner;
+    _mode = TerminalMode.ON;
+    _modeString = "Idle";
+    _debt = 0;
+    _payments = 0;
+    _friends = new HashSet<Terminal>();
+    _toNotify = new HashSet<Client>();
+  }
+
+  public String getId(){
+    return _id;
+  }
+
   /**
    * Checks if this terminal can end the current interactive communication.
    *
@@ -35,6 +50,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
    **/
   public boolean canEndCurrentCommunication() {
     // FIXME add implementation code
+    return false;
   }
   
   /**
@@ -44,5 +60,6 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
    **/
   public boolean canStartCommunication() {
     // FIXME add implementation code
+    return false;
   }
 }
