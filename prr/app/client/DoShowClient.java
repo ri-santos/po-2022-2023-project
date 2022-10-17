@@ -21,13 +21,8 @@ class DoShowClient extends Command<Network> {
   @Override
   protected final void execute() throws CommandException,UnknownClientKeyException {
     String key = stringField("key");
-
-    for (Client client : _receiver.getClients()){
-      if (key == client.getKey()){
-        _display.popup(client.toString());
-      }
-    }
-
+    _display.addLine(_receiver.showClient(key));
+    _display.display();
     //FIXME implement command
   }
 }
