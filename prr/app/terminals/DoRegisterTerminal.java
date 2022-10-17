@@ -16,7 +16,7 @@ class DoRegisterTerminal extends Command<Network> {
   DoRegisterTerminal(Network receiver) {
     super(Label.REGISTER_TERMINAL, receiver);
     addStringField("id", Message.terminalKey());
-    addStringField("type",Message.terminalType());     //  se nao for basic ou fancy repetir?????
+    addOptionField("type", Message.terminalType(), "BASIC", "FANCY");
     addStringField("idClient", Message.clientKey());
 
   //invalidar   idTer invalido ou ja esta a ser utilizado
@@ -29,7 +29,7 @@ class DoRegisterTerminal extends Command<Network> {
   protected final void execute() throws CommandException {
     //FIXME implement command
     String id = stringField("id");
-    String type = stringField("type");
+    String type = optionField("type");
     String idClient = stringField("idClient");
 
 //??????????????

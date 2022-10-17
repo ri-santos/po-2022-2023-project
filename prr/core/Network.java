@@ -43,7 +43,7 @@ public class Network implements Serializable {
 
   public void registerClient(String key, String name, int taxNumber) throws DuplicateClientKeyException{
     Client newClient = new Client(key, name, taxNumber);
-    if (!this.findClient(key)){
+    if (!this.sameKeyClient(key)){
       System.out.println("added");
       _clients.add(newClient);
     }
@@ -70,7 +70,7 @@ public class Network implements Serializable {
     return _clients.contains(client);
   }
 
-  public boolean findClient(String key){
+  public boolean sameKeyClient(String key){
     for (Client client : _clients){
       System.out.println(client.getKey());
       if (client.getKey().equals(key)){
