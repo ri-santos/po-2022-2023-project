@@ -43,9 +43,13 @@ public class Client {
         return _taxNumber;
     }
 
+    public void addClientTerminal(Terminal terminal){
+        _terminals.add(terminal);
+    }
+
     public String toString(){
         return ("CLIENT|" + _key + "|" + _name + "|" + _taxNumber + "|" + 
-        _clientLevel + _notificationsOnOff + "|" + _terminals.size() + "|" +
-        _payments + "|" + _debts);
+        _clientLevel + "|" + _notificationsOnOff + "|" + _terminals.size() + "|" +
+        (long)_payments + "|" + (long)_debts);
     }
 }

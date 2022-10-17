@@ -2,6 +2,7 @@ package prr.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.HashMap;
 
 
 // FIXME add more import if needed (cannot import from pt.tecnico or prr.app)
@@ -19,8 +20,8 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   private double _debt;
   private double _payments;
   private TerminalMode _mode;
-  private HashSet<Terminal> _friends;
-  private HashSet<Client> _toNotify;
+  private HashMap<String, Terminal> _friends;
+  private HashMap<String, Client> _toNotify;
   
   
   // FIXME define attributes
@@ -34,8 +35,8 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     _modeString = "Idle";
     _debt = 0;
     _payments = 0;
-    _friends = new HashSet<Terminal>();
-    _toNotify = new HashSet<Client>();
+    _friends = new HashMap<String, Terminal>();
+    _toNotify = new HashMap<String, Client>();
   }
 
   public String getId(){
@@ -62,4 +63,6 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     // FIXME add implementation code
     return false;
   }
-}
+  }
+
+
