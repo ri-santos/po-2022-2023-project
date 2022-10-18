@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
 
 import prr.core.exception.ImportFileException;
 import prr.core.exception.MissingFileAssociationException;
@@ -32,8 +34,14 @@ public class NetworkManager {
    * @throws UnavailableFileException if the specified file does not exist or there is
    *         an error while processing this file.
    */
-  public void load(String filename) throws UnavailableFileException {
+  public void load(String filename) throws UnavailableFileException, IOException, ClassNotFoundException {
     //FIXME implement serialization method
+    try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))){
+      _network = (Network)in.readObject();
+    }
+    
+    }
+      _filename = filename;
   }
   
   /**
@@ -45,6 +53,7 @@ public class NetworkManager {
    */
   public void save() throws FileNotFoundException, MissingFileAssociationException, IOException {
     //FIXME implement serialization method
+    saveAs(_filename);
   }
   
   /**
@@ -58,6 +67,9 @@ public class NetworkManager {
    */
   public void saveAs(String filename) throws FileNotFoundException, MissingFileAssociationException, IOException {
     //FIXME implement serialization method
+    try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))){
+      out.writeObject(_network);
+    }
   }
   
   /**
@@ -73,14 +85,4 @@ public class NetworkManager {
       throw new ImportFileException(filename, e);
     }
   }  
-
-  public void saveState(String file) throws IOException{
-    try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))){
-      out.writeObject(_network);
-    }
-  }
-
-  public void openState(String fileName) throws IOException{
-
-  }
 }
