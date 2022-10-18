@@ -3,6 +3,7 @@ package prr.core;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Collection;
 
 
 // FIXME add more import if needed (cannot import from pt.tecnico or prr.app)
@@ -14,14 +15,20 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
 
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202208091753L;
+  
   private String _id;
   private Client _owner;
   private String _modeString;
   private double _debt;
   private double _payments;
   private TerminalMode _mode;
+  private String _terminalType;
   private HashMap<String, Terminal> _friends;
   private HashMap<String, Client> _toNotify;
+  private Communication _ongoingCommunication;
+  private HashMap<Integer, Communication> _madeCommunications;
+  private HashMap<Integer, Communication> _recievedCommunications;
+
   
   
   // FIXME define attributes
@@ -32,7 +39,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     _id = id;
     _owner = owner;
     _mode = TerminalMode.ON;
-    _modeString = "Idle";
+    _modeString = "IDLE";
     _debt = 0;
     _payments = 0;
     _friends = new HashMap<String, Terminal>();
@@ -42,6 +49,59 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   public String getId(){
     return _id;
   }
+
+  public Client getOwner(){
+    return _owner;
+  }
+
+  public TerminalMode getMode(){
+    return _mode;
+  }
+
+  public String getModeString(){
+    return _modeString;
+  }
+
+  public Double getDebts(){
+    return _debt;
+  }
+
+  public Double getPayments(){
+    return _payments;
+  }
+
+  public String getTerminalType(){
+    return _terminalType;
+  }
+
+  public void setTerminalType(String type){
+    _terminalType = type;
+  }
+
+  public String toString(){
+    return (_terminalType + "|" + getId() + "|" + getOwner().getKey() + "|" + getModeString() + "|" + 
+    (long)_payments + "|" + (long)_debt);
+  }
+
+  public Collection<Communication> getMadeCommunications(){
+    return _madeCommunications.values();
+  }
+
+  public Collection<Communication> getRecievedCommunications(){
+    return _recievedCommunications.values();
+  }
+
+  public HashSet<String> showAllCommunications(){
+    HashSet<String> communications = new HashSet<String>();
+    for (Communication communication : getRecievedCommunications()){
+      communications.add(communication.toString());
+    }
+    for (Communication communication : getMadeCommunications()){
+      communications.add(communication.toString());
+    }
+    return communications;
+  }
+
 
   /**
    * Checks if this terminal can end the current interactive communication.
@@ -63,6 +123,6 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     // FIXME add implementation code
     return false;
   }
-  }
+}
 
 

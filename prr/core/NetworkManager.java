@@ -1,7 +1,9 @@
 package prr.core;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import prr.core.exception.ImportFileException;
 import prr.core.exception.MissingFileAssociationException;
@@ -71,4 +73,14 @@ public class NetworkManager {
       throw new ImportFileException(filename, e);
     }
   }  
+
+  public void saveState(String file) throws IOException{
+    try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))){
+      out.writeObject(_network);
+    }
+  }
+
+  public void openState(String fileName) throws IOException{
+
+  }
 }

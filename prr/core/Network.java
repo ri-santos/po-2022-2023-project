@@ -72,11 +72,24 @@ public class Network implements Serializable {
     }
   }
 
-  public void registerFancyTerminal(String id, String clientKey){
+  public void registerFancyTerminal(String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
     Client owner = getClient(clientKey);
-    Terminal newTerminal = new FancyTerminal(id, owner);
-    _terminals.put(id, newTerminal);
-    owner.addClientTerminal(newTerminal);
+     if (owner == null){
+      throw new ClientDoesNotExistException(clientKey);
+    }
+    else{
+      if (id.length()!= 6){
+        throw new InvalidTerminalIdException(id);
+      }
+      else{
+        if (getTerminal(id) == null){
+          Terminal newTerminal = new FancyTerminal(id, owner);
+          _terminals.put(id, newTerminal);
+          owner.addClientTerminal(newTerminal);
+        }
+        else throw new DuplicateKeyException(id);
+      }
+    }
   }
 
   private Client getClient(String key){
@@ -107,11 +120,29 @@ public class Network implements Serializable {
     return _terminals.values();
   }
 
+  public HashSet<String> showAllTerminals(){
+    HashSet<String> terminals = new HashSet<String>();
+    for (Terminal terminal : getTerminals()){
+      terminals.add(terminal.toString());
+    }
+    return terminals;
+  }
+
+
   public Collection<TariffPlan> getTariffPlans(){
     return _tariffPlans;
   }
 
-  
+  public HashSet<String> showAllUnusedTerminals(){
+    HashSet<String> unusedTerminals = new HashSet<String>();
+    for (Terminal terminal : getTerminals()){
+      if (terminal.showAllCommunications().size() == 0){
+        unusedTerminals.add(terminal.toString());
+      }
+    }
+    return unusedTerminals;
+  }
+
 
 
 }

@@ -17,5 +17,9 @@ class DoShowUnusedTerminals extends Command<Network> {
   @Override
   protected final void execute() throws CommandException {
     //FIXME implement command
+    for (String line : _receiver.showAllUnusedTerminals()){
+      _display.addLine(line);
+    }
+    _display.display();
   }
 }

@@ -41,7 +41,7 @@ class DoRegisterTerminal extends Command<Network> {
           _receiver.registerBasicTerminal(terminalId, keyClient);
           break;
         case "FANCY":
-          _receiver.registerBasicTerminal(terminalId, keyClient);
+          _receiver.registerFancyTerminal(terminalId, keyClient);
           break;
       }
     } catch(DuplicateKeyException e){
