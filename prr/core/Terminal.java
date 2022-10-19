@@ -18,7 +18,6 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   
   private String _id;
   private Client _owner;
-  private String _modeString;
   private double _debt;
   private double _payments;
   private TerminalMode _mode;
@@ -39,7 +38,6 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     _id = id;
     _owner = owner;
     _mode = TerminalMode.ON;
-    _modeString = "IDLE";
     _debt = 0;
     _payments = 0;
     _friends = new HashMap<String, Terminal>();
@@ -56,10 +54,6 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
 
   public TerminalMode getMode(){
     return _mode;
-  }
-
-  public String getModeString(){
-    return _modeString;
   }
 
   public Double getDebts(){
@@ -79,7 +73,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   }
 
   public String toString(){
-    return (_terminalType + "|" + getId() + "|" + getOwner().getKey() + "|" + getModeString() + "|" + 
+    return (_terminalType + "|" + getId() + "|" + getOwner().getKey() + "|" + _mode + "|" + 
     (long)_payments + "|" + (long)_debt);
   }
 
@@ -102,6 +96,21 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     return communications;
   }
 
+  public void setOnSilent(){
+    _mode = TerminalMode.SILENCE;
+  }
+
+  public void setOnIdle(){
+    _mode = TerminalMode.ON;
+  }
+
+  public void turnOff(){
+    _mode = TerminalMode.OFF;
+  }
+
+  public void addNewFriend(Terminal friend, String id){
+    _friends.put(id, friend);
+  }
 
   /**
    * Checks if this terminal can end the current interactive communication.
@@ -121,7 +130,8 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
    **/
   public boolean canStartCommunication() {
     // FIXME add implementation code
-    return false;
+    return (_mode != TerminalMode.OFF | _mode != TerminalMode.BUSY |
+    _mode != TerminalMode.SILENCE);
   }
 }
 

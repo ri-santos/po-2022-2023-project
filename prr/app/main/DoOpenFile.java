@@ -1,5 +1,7 @@
 package prr.app.main;
 
+import java.io.IOException;
+
 import prr.core.NetworkManager;
 import prr.app.exception.FileOpenFailedException;
 import prr.core.exception.UnavailableFileException;
@@ -21,10 +23,12 @@ class DoOpenFile extends Command<NetworkManager> {
   
   @Override
   protected final void execute() throws CommandException {
-    String filename = stringField("filename");
+   String filename = stringField("filename");
     try {
     //FIXME implement command
     _receiver.load(filename);
-    } 
+    }catch(ClassNotFoundException|IOException|UnavailableFileException e){
+      throw new FileOpenFailedException(e);
+    }
   }
 }

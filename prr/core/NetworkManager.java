@@ -22,7 +22,7 @@ public class NetworkManager {
   /** The network itself. */
   private Network _network = new Network();
   //FIXME  addmore fields if needed
-  private String _filename;
+  private String _filename = null;
   
   public Network getNetwork() {
     return _network;
@@ -40,7 +40,6 @@ public class NetworkManager {
       _network = (Network)in.readObject();
     }
     
-    }
       _filename = filename;
   }
   
@@ -69,6 +68,7 @@ public class NetworkManager {
     //FIXME implement serialization method
     try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))){
       out.writeObject(_network);
+      _filename = filename;
     }
   }
   
@@ -84,5 +84,9 @@ public class NetworkManager {
     } catch (IOException | UnrecognizedEntryException /* FIXME maybe other exceptions */ e) {
       throw new ImportFileException(filename, e);
     }
-  }  
+  } 
+  
+  public boolean hasFile(){
+    return (_filename != null);
+  }
 }

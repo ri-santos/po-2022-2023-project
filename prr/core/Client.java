@@ -12,7 +12,6 @@ public class Client implements Serializable{
     private int _taxNumber;
     private ClientLevel _clientLevel;
     private boolean _recieveNotifications;
-    private String _notificationsOnOff;
     private HashSet<Terminal> _terminals;
     private TariffPlan _tariff;
     private double _payments;
@@ -26,7 +25,6 @@ public class Client implements Serializable{
         _taxNumber = taxNumber;
         _clientLevel = ClientLevel.NORMAL;
         _recieveNotifications = true;
-        _notificationsOnOff = "YES";
         _terminals = new HashSet<Terminal>();
         _tariff = new TariffPlan("Base");
         _payments = 0;
@@ -50,9 +48,17 @@ public class Client implements Serializable{
         _terminals.add(terminal);
     }
 
+    public void turnNotificationsOn(){
+        _recieveNotifications = true;
+    }
+
+    public void turnNotificationsOff(){
+        _recieveNotifications = false;
+    }
+
     public String toString(){
         return ("CLIENT|" + _key + "|" + _name + "|" + _taxNumber + "|" + 
-        _clientLevel + "|" + _notificationsOnOff + "|" + _terminals.size() + "|" +
+        _clientLevel + "|" + (_recieveNotifications? "YES":"NO") + "|" + _terminals.size() + "|" +
         (long)_payments + "|" + (long)_debts);
     }
 }

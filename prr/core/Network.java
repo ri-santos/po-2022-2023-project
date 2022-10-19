@@ -52,6 +52,18 @@ public class Network implements Serializable {
     else throw new DuplicateKeyException(key);
   }
 
+  public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
+    switch(type){
+      case "BASIC":
+      registerBasicTerminal(id, clientKey);
+      break;
+      
+      case "FANCY":
+      registerFancyTerminal(id, clientKey);
+      break;
+    }
+  }
+  
   public void registerBasicTerminal(String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
     Client owner = getClient(clientKey);
     if (owner == null){
@@ -108,8 +120,12 @@ public class Network implements Serializable {
     return clients;
   }
 
-  public String showClient(String key){
-    return getClient(key).toString();
+  public String showClient(String key) throws ClientDoesNotExistException{
+    Client client = getClient(key);
+    if (client != null){
+      return client.toString();
+    }
+    else throw new ClientDoesNotExistException(key);
   }
 
   public Terminal getTerminal(String id){
@@ -118,6 +134,13 @@ public class Network implements Serializable {
 
   public Collection<Terminal> getTerminals(){
     return _terminals.values();
+  }
+
+  public Terminal openTerminalMenu(String id) throws InvalidTerminalIdException{
+    Terminal terminal = getTerminal(id);
+    if(terminal != null){
+      return terminal;
+    } else throw new InvalidTerminalIdException(id);
   }
 
   public HashSet<String> showAllTerminals(){
@@ -143,7 +166,12 @@ public class Network implements Serializable {
     return unusedTerminals;
   }
 
+  public void addFriend(String terminal, String friend){
+    Terminal addToTerminal = getTerminal(terminal);
+    Terminal friendTerminal = getTerminal(friend);
+    addToTerminal.addNewFriend(friendTerminal, friend);
 
+  }
 
 }
 

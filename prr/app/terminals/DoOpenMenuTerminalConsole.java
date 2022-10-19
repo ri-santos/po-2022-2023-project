@@ -1,7 +1,7 @@
 package prr.app.terminals;
 
 import prr.core.Network;
-import prr.app.terminal.Menu;
+import prr.core.exception.InvalidTerminalIdException;
 import prr.app.exception.UnknownTerminalKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -24,6 +24,10 @@ class DoOpenMenuTerminalConsole extends Command<Network> {
     // create an instance of prr.app.terminal.Menu with the
     // selected Terminal and open it
     String id = stringField("id");
-    (new prr.app.terminal.Menu(_receiver, _receiver.getTerminal(id))).open();
+    try{
+      (new prr.app.terminal.Menu(_receiver, _receiver.openTerminalMenu(id))).open();
+    } catch(InvalidTerminalIdException e){
+      throw new UnknownTerminalKeyException(e.getId());
+    }
   }
 }

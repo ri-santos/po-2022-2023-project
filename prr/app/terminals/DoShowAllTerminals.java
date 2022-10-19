@@ -19,9 +19,7 @@ class DoShowAllTerminals extends Command<Network> {
   @Override
   protected final void execute() throws CommandException {
     //FIXME implement command
-    for (String line : _receiver.showAllTerminals()){
-      _display.addLine(line);
-    }
+    _display.addAll(_receiver.showAllTerminals());
     _display.display();
   }
 }

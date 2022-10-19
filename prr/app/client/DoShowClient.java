@@ -1,7 +1,7 @@
 package prr.app.client;
 
-import prr.core.Client;
 import prr.core.Network;
+import prr.core.exception.ClientDoesNotExistException;
 import prr.app.exception.UnknownClientKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -21,7 +21,11 @@ class DoShowClient extends Command<Network> {
   @Override
   protected final void execute() throws CommandException,UnknownClientKeyException {
     String key = stringField("key");
-    _display.addLine(_receiver.showClient(key));
+    try{
+      _display.addLine(_receiver.showClient(key));
+    } catch(ClientDoesNotExistException e){
+      throw new UnknownClientKeyException(e.getKey());
+    }
     _display.display();
     //FIXME implement command
   }
