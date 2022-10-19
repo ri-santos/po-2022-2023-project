@@ -17,7 +17,7 @@ class DoShowAllClients extends Command<Network> {
   @Override
   protected final void execute() throws CommandException {
     //FIXME implement command
-    _display.addAll(_receiver.showAllClients());
+    _display.addAll(_receiver.getClients());
     _display.display();
   }
 }

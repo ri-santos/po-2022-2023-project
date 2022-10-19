@@ -2,6 +2,7 @@ package prr.app.terminals;
 
 import prr.core.Network;
 import prr.core.exception.InvalidTerminalIdException;
+import prr.core.exception.TerminalDoesNotExistException;
 import prr.app.exception.UnknownTerminalKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -19,14 +20,14 @@ class DoOpenMenuTerminalConsole extends Command<Network> {
   }
 
   @Override
-  protected final void execute() throws CommandException {
+  protected final void execute() throws CommandException, UnknownTerminalKeyException {
     //FIXME implement command
     // create an instance of prr.app.terminal.Menu with the
     // selected Terminal and open it
     String id = stringField("id");
     try{
       (new prr.app.terminal.Menu(_receiver, _receiver.openTerminalMenu(id))).open();
-    } catch(InvalidTerminalIdException e){
+    } catch(TerminalDoesNotExistException e){
       throw new UnknownTerminalKeyException(e.getId());
     }
   }

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import prr.core.NetworkManager;
 import prr.app.exception.FileOpenFailedException;
+import prr.core.exception.ImportFileException;
 import prr.core.exception.UnavailableFileException;
 import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;

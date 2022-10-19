@@ -2,9 +2,9 @@ package prr.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
-
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.io.IOException;
 
 import prr.core.exception.*;
@@ -18,8 +18,8 @@ public class Network implements Serializable {
 
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202208091753L;
-  private HashMap<String, Client> _clients;
-  private HashMap<String, Terminal> _terminals;
+  private TreeMap<String, Client> _clients;
+  private TreeMap<String, Terminal> _terminals;
   private HashSet<TariffPlan> _tariffPlans;
 
 
@@ -28,8 +28,8 @@ public class Network implements Serializable {
   // FIXME define methods
   
   public Network(){
-    _clients = new HashMap<String, Client>();
-    _terminals = new HashMap<String, Terminal>();
+    _clients = new TreeMap<String, Client>();
+    _terminals = new TreeMap<String, Terminal>();
     _tariffPlans = new HashSet<TariffPlan>();
   }
 
@@ -40,8 +40,10 @@ public class Network implements Serializable {
    * @throws UnrecognizedEntryException if some entry is not correct
    * @throws IOException if there is an IO erro while processing the text file
    */
-  void importFile(String filename) throws UnrecognizedEntryException, IOException /* FIXME maybe other exceptions */  {
+  void importFile(String filename) throws UnrecognizedEntryException, IOException, ImportFileException  {
     //FIXME implement method
+    Parser parser = new Parser(this);
+    parser.parseFile(filename);
   }
 
   public void registerClient(String key, String name, int taxNumber) throws DuplicateKeyException{
@@ -109,7 +111,8 @@ public class Network implements Serializable {
   }
 
   public Collection<Client> getClients(){
-    return _clients.values();
+    Collection<Client> client = new ArrayList<Client>(_clients.values());
+    return client;
   }
 
   public HashSet<String> showAllClients(){
@@ -133,14 +136,12 @@ public class Network implements Serializable {
   }
 
   public Collection<Terminal> getTerminals(){
-    return _terminals.values();
+    Collection<Terminal> terminals = new ArrayList<Terminal>(_terminals.values());
+    return terminals;
   }
 
-  public Terminal openTerminalMenu(String id) throws InvalidTerminalIdException{
-    Terminal terminal = getTerminal(id);
-    if(terminal != null){
-      return terminal;
-    } else throw new InvalidTerminalIdException(id);
+  public Terminal openTerminalMenu(String id) throws TerminalDoesNotExistException{
+      return getExistingTerminal(id);
   }
 
   public HashSet<String> showAllTerminals(){
@@ -151,26 +152,31 @@ public class Network implements Serializable {
     return terminals;
   }
 
-
   public Collection<TariffPlan> getTariffPlans(){
     return _tariffPlans;
   }
 
-  public HashSet<String> showAllUnusedTerminals(){
-    HashSet<String> unusedTerminals = new HashSet<String>();
+  public Collection<Terminal> showAllUnusedTerminals(){
+    Collection<Terminal> unusedTerminals = new ArrayList<Terminal>();
     for (Terminal terminal : getTerminals()){
-      if (terminal.showAllCommunications().size() == 0){
-        unusedTerminals.add(terminal.toString());
+      if (terminal.numberOfCommunications() == 0){
+        unusedTerminals.add(terminal);
       }
     }
     return unusedTerminals;
   }
 
-  public void addFriend(String terminal, String friend){
-    Terminal addToTerminal = getTerminal(terminal);
-    Terminal friendTerminal = getTerminal(friend);
-    addToTerminal.addNewFriend(friendTerminal, friend);
+  public Terminal getExistingTerminal(String id) throws TerminalDoesNotExistException{
+    Terminal terminal = getTerminal(id);
+    if(terminal != null){
+      return terminal;
+    }else throw new TerminalDoesNotExistException(id);
+  }
 
+  public void addFriend(String terminal, String friend) throws TerminalDoesNotExistException{
+    Terminal addToTerminal = getExistingTerminal(terminal);
+    Terminal friendTerminal = getExistingTerminal(friend);
+    addToTerminal.addNewFriend(friendTerminal, friend);
   }
 
 }

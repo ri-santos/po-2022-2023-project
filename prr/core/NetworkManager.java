@@ -34,10 +34,12 @@ public class NetworkManager {
    * @throws UnavailableFileException if the specified file does not exist or there is
    *         an error while processing this file.
    */
-  public void load(String filename) throws UnavailableFileException, IOException, ClassNotFoundException {
+  public void load(String filename) throws UnavailableFileException, IOException, ClassNotFoundException{
     //FIXME implement serialization method
     try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))){
       _network = (Network)in.readObject();
+    }catch(IOException e){
+      throw new UnavailableFileException(filename);
     }
     
       _filename = filename;
@@ -81,7 +83,7 @@ public class NetworkManager {
   public void importFile(String filename) throws ImportFileException {
     try {
       _network.importFile(filename);
-    } catch (IOException | UnrecognizedEntryException /* FIXME maybe other exceptions */ e) {
+    } catch (UnrecognizedEntryException | IOException e) {
       throw new ImportFileException(filename, e);
     }
   } 

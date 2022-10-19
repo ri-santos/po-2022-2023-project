@@ -26,7 +26,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   private HashMap<String, Client> _toNotify;
   private Communication _ongoingCommunication;
   private HashMap<Integer, Communication> _madeCommunications;
-  private HashMap<Integer, Communication> _recievedCommunications;
+  private HashMap<Integer, Communication> _receivedCommunications;
 
   
   
@@ -37,11 +37,13 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   public Terminal(String id, Client owner){
     _id = id;
     _owner = owner;
-    _mode = TerminalMode.ON;
+    _mode = TerminalMode.IDLE;
     _debt = 0;
     _payments = 0;
     _friends = new HashMap<String, Terminal>();
     _toNotify = new HashMap<String, Client>();
+    _madeCommunications = new HashMap<Integer, Communication>();
+    _receivedCommunications = new HashMap<Integer, Communication>();
   }
 
   public String getId(){
@@ -82,7 +84,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   }
 
   public Collection<Communication> getRecievedCommunications(){
-    return _recievedCommunications.values();
+    return _receivedCommunications.values();
   }
 
   public HashSet<String> showAllCommunications(){
@@ -96,12 +98,16 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
     return communications;
   }
 
+  public int numberOfCommunications(){
+    return (_madeCommunications.size() + _receivedCommunications.size());
+  }
+
   public void setOnSilent(){
     _mode = TerminalMode.SILENCE;
   }
 
   public void setOnIdle(){
-    _mode = TerminalMode.ON;
+    _mode = TerminalMode.IDLE;
   }
 
   public void turnOff(){

@@ -61,7 +61,7 @@ public class Parser {
       _network.registerClient(components[1], components[2], taxNumber);
     } catch (NumberFormatException nfe) {
       throw new UnrecognizedEntryException("Invalid number in line " + line, nfe);
-    } catch (OtherException e) {
+    } catch (DuplicateKeyException e) {
       throw new UnrecognizedEntryException("Invalid specification in line: " + line, e);
     }
   }
@@ -99,7 +99,7 @@ public class Parser {
       
       for (String friend : friends)
         _network.addFriend(terminal, friend);
-    } catch (OtherException e) {
+    } catch (TerminalDoesNotExistException e) {
       throw new UnrecognizedEntryException("Some message error in line:  " + line, e);
     }
   }
