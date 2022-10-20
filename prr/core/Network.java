@@ -2,8 +2,10 @@ package prr.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.TreeMap;
 import java.io.IOException;
 
@@ -53,11 +55,6 @@ public class Network implements Serializable {
   private Client getClient(String key){
     return _clients.get(key);
   }
-
-  public Collection<Client> getClients(){
-    Collection<Client> client = new ArrayList<Client>(_clients.values());
-    return client;
-  }
   
   public Client getExistingClient(String key) throws ClientDoesNotExistException{
     Client client = getClient(key);
@@ -66,12 +63,8 @@ public class Network implements Serializable {
     }else throw new ClientDoesNotExistException();
   }
 
-  public Collection<String> showAllClients(){
-    Collection<String> clients = new ArrayList<String>();
-    for (Client client : getClients()){
-      clients.add(client.toString());
-    }
-    return clients;
+  public List<Client> getClients(){
+    return Collections.unmodifiableList(new ArrayList<Client>(_clients.values()));
   }
 
   public String showClient(String key) throws ClientDoesNotExistException{
@@ -79,13 +72,9 @@ public class Network implements Serializable {
     return client.toString();
   }
 
-  public Collection<String> showNotifications(String key) throws ClientDoesNotExistException{
+  public List<Notification> showNotifications(String key) throws ClientDoesNotExistException{
     Client client = getExistingClient(key);
-    Collection<String> notifications = new ArrayList<String>();
-    for (Notification notification : client.getNotifications()){
-      notifications.add(notification.toString());
-    }
-    return notifications;
+    return Collections.unmodifiableList(new ArrayList<Notification>(client.getNotifications()));
   }
 
   public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
@@ -120,20 +109,16 @@ public class Network implements Serializable {
   }
 
   public Collection<Terminal> getTerminals(){
-    Collection<Terminal> terminals = new ArrayList<Terminal>(_terminals.values());
-    return terminals;
+    return _terminals.values();
+    
   }
 
   public Terminal openTerminalMenu(String id) throws TerminalDoesNotExistException{
       return getExistingTerminal(id);
   }
 
-  public Collection<String> showAllTerminals(){
-    Collection<String> terminals = new ArrayList<String>();
-    for (Terminal terminal : getTerminals()){
-      terminals.add(terminal.toString());
-    }
-    return terminals;
+  public Collection<Terminal> showAllTerminals(){
+    return Collections.unmodifiableList(new ArrayList<>(getTerminals()));
   }
 
   public Collection<String> showAllUnusedTerminals(){
