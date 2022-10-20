@@ -9,16 +9,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import prr.core.exception.*;
-// import more exception core classes if needed
 
-/* 
- * A concretização desta classe depende da funcionalidade suportada pelas entidades do core:
- *  - adicionar um cliente e terminal a uma rede de terminais;
- *  - indicar o estado de um terminal
- *  - adicionar um amigo a um dado terminal
- * A forma como estas funcionalidades estão concretizaas terão impacto depois na concretização dos
- * métodos parseClient, parseTerminal e parseFriends
- */
 
 public class Parser {
   private Network _network;

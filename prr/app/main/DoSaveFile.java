@@ -6,7 +6,6 @@ import prr.core.NetworkManager;
 import prr.core.exception.MissingFileAssociationException;
 import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
-//FIXME add more imports if needed
 
 /**
  * Command to save a file.
@@ -18,9 +17,7 @@ class DoSaveFile extends Command<NetworkManager> {
   }
   
   @Override
-  protected final void execute() {
-    //FIXME implement command and create a local Form
-    
+  protected final void execute() {  
     if (!_receiver.hasFile()){
       String filename = Form.requestString(Message.newSaveAs());
       try{
@@ -32,7 +29,6 @@ class DoSaveFile extends Command<NetworkManager> {
     else{
       try{
         _receiver.save();
-
       }catch(IOException|MissingFileAssociationException e){
         _display.popup(Message.fileNotFound());
       }

@@ -36,14 +36,7 @@ class DoRegisterTerminal extends Command<Network> {
     String keyClient = stringField("keyClient");
     
     try{
-      switch(type){
-        case "BASIC":
-          _receiver.registerBasicTerminal(terminalId, keyClient);
-          break;
-        case "FANCY":
-          _receiver.registerFancyTerminal(terminalId, keyClient);
-          break;
-      }
+      _receiver.registerTerminal(type, terminalId, keyClient);
     } catch(DuplicateKeyException e){
       throw new DuplicateTerminalKeyException(e.getKey());
 

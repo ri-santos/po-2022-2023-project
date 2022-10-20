@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import prr.core.exception.*;
 
-// FIXME add more import if needed (cannot import from pt.tecnico or prr.app)
 
 /**
  * Class Store implements a store.
@@ -22,16 +21,13 @@ public class Network implements Serializable {
   private TreeMap<String, Terminal> _terminals;
   private HashSet<TariffPlan> _tariffPlans;
 
-
-  // FIXME define attributes
-  // FIXME define contructor(s)
-  // FIXME define methods
   
   public Network(){
     _clients = new TreeMap<String, Client>();
     _terminals = new TreeMap<String, Terminal>();
     _tariffPlans = new HashSet<TariffPlan>();
   }
+
 
   /**
    * Read text input file and create corresponding domain entities.
@@ -41,10 +37,10 @@ public class Network implements Serializable {
    * @throws IOException if there is an IO erro while processing the text file
    */
   void importFile(String filename) throws UnrecognizedEntryException, IOException, ImportFileException  {
-    //FIXME implement method
     Parser parser = new Parser(this);
     parser.parseFile(filename);
   }
+  
 
   public void registerClient(String key, String name, int taxNumber) throws DuplicateKeyException{
     Client newClient = new Client(key, name, taxNumber);
@@ -52,58 +48,6 @@ public class Network implements Serializable {
       _clients.put(key, newClient);
     }
     else throw new DuplicateKeyException(key);
-  }
-
-  public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
-    switch(type){
-      case "BASIC":
-      registerBasicTerminal(id, clientKey);
-      break;
-      
-      case "FANCY":
-      registerFancyTerminal(id, clientKey);
-      break;
-    }
-  }
-  
-  public void registerBasicTerminal(String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
-    Client owner = getClient(clientKey);
-    if (owner == null){
-      throw new ClientDoesNotExistException(clientKey);
-    }
-    else{
-      if (id.length()!= 6){
-        throw new InvalidTerminalIdException(id);
-      }
-      else{
-        if (getTerminal(id) == null){
-          Terminal newTerminal = new BasicTerminal(id, owner);
-          _terminals.put(id, newTerminal);
-          owner.addClientTerminal(newTerminal);
-        }
-        else throw new DuplicateKeyException(id);
-      }
-    }
-  }
-
-  public void registerFancyTerminal(String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
-    Client owner = getClient(clientKey);
-     if (owner == null){
-      throw new ClientDoesNotExistException(clientKey);
-    }
-    else{
-      if (id.length()!= 6){
-        throw new InvalidTerminalIdException(id);
-      }
-      else{
-        if (getTerminal(id) == null){
-          Terminal newTerminal = new FancyTerminal(id, owner);
-          _terminals.put(id, newTerminal);
-          owner.addClientTerminal(newTerminal);
-        }
-        else throw new DuplicateKeyException(id);
-      }
-    }
   }
 
   private Client getClient(String key){
@@ -114,9 +58,16 @@ public class Network implements Serializable {
     Collection<Client> client = new ArrayList<Client>(_clients.values());
     return client;
   }
+  
+  public Client getExistingClient(String key) throws ClientDoesNotExistException{
+    Client client = getClient(key);
+    if(client != null){
+      return client;
+    }else throw new ClientDoesNotExistException(key);
+  }
 
-  public HashSet<String> showAllClients(){
-    HashSet<String> clients = new HashSet<String>();
+  public Collection<String> showAllClients(){
+    Collection<String> clients = new ArrayList<String>();
     for (Client client : getClients()){
       clients.add(client.toString());
     }
@@ -124,11 +75,33 @@ public class Network implements Serializable {
   }
 
   public String showClient(String key) throws ClientDoesNotExistException{
-    Client client = getClient(key);
-    if (client != null){
-      return client.toString();
+    Client client = getExistingClient(key);
+    return client.toString();
+  }
+
+
+  public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
+    Client owner = getExistingClient(clientKey);
+    if (id.length()!= 6){
+        throw new InvalidTerminalIdException(id);
     }
-    else throw new ClientDoesNotExistException(key);
+    else if(getTerminal(id) == null){
+        switch(type){
+        case "BASIC":
+        Terminal newBasicTerminal = new BasicTerminal(id, owner);
+        addTerminal(id, newBasicTerminal, owner);
+        
+        case "FANCY":
+        Terminal newFancyTerminal = new FancyTerminal(id, owner);
+        addTerminal(id, newFancyTerminal, owner);
+        }
+    }
+    else throw new DuplicateKeyException(id);
+  }
+  
+  public void addTerminal(String id, Terminal newTerminal, Client owner){
+    _terminals.put(id, newTerminal);
+    owner.addClientTerminal(newTerminal);
   }
 
   public Terminal getTerminal(String id){
@@ -144,23 +117,19 @@ public class Network implements Serializable {
       return getExistingTerminal(id);
   }
 
-  public HashSet<String> showAllTerminals(){
-    HashSet<String> terminals = new HashSet<String>();
+  public Collection<String> showAllTerminals(){
+    Collection<String> terminals = new ArrayList<String>();
     for (Terminal terminal : getTerminals()){
       terminals.add(terminal.toString());
     }
     return terminals;
   }
 
-  public Collection<TariffPlan> getTariffPlans(){
-    return _tariffPlans;
-  }
-
-  public Collection<Terminal> showAllUnusedTerminals(){
-    Collection<Terminal> unusedTerminals = new ArrayList<Terminal>();
+  public Collection<String> showAllUnusedTerminals(){
+    Collection<String> unusedTerminals = new ArrayList<String>();
     for (Terminal terminal : getTerminals()){
       if (terminal.numberOfCommunications() == 0){
-        unusedTerminals.add(terminal);
+        unusedTerminals.add(terminal.toString());
       }
     }
     return unusedTerminals;
@@ -179,8 +148,9 @@ public class Network implements Serializable {
     addToTerminal.addNewFriend(friendTerminal, friend);
   }
 
+  
+  public Collection<TariffPlan> getTariffPlans(){
+    return _tariffPlans;
+  }
+  
 }
-
-
-
-

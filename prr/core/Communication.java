@@ -2,7 +2,6 @@ package prr.core;
 
 import java.io.Serializable;
 
-// FIXME add more import if needed (cannot import from pt.tecnico or prr.app)
 
 /**
  * Abstract terminal.

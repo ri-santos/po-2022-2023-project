@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Collection;
 
 
-// FIXME add more import if needed (cannot import from pt.tecnico or prr.app)
-
 /**
  * Abstract terminal.
  */
@@ -28,11 +26,6 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
   private HashMap<Integer, Communication> _madeCommunications;
   private HashMap<Integer, Communication> _receivedCommunications;
 
-  
-  
-  // FIXME define attributes
-  // FIXME define contructor(s)
-  // FIXME define methods
   
   public Terminal(String id, Client owner){
     _id = id;
@@ -125,8 +118,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
    *          it was the originator of this communication.
    **/
   public boolean canEndCurrentCommunication() {
-    // FIXME add implementation code
-    return false;
+    return (_mode == TerminalMode.BUSY);
   }
   
   /**
@@ -135,9 +127,7 @@ abstract public class Terminal implements Serializable /* FIXME maybe addd more 
    * @return true if this terminal is neither off neither busy, false otherwise.
    **/
   public boolean canStartCommunication() {
-    // FIXME add implementation code
-    return (_mode != TerminalMode.OFF | _mode != TerminalMode.BUSY |
-    _mode != TerminalMode.SILENCE);
+    return (_mode != TerminalMode.OFF | _mode != TerminalMode.BUSY);
   }
 }
 

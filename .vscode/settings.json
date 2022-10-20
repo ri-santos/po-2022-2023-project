@@ -2,5 +2,9 @@
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
         "po-uilib.jar"
-    ]
+    ],
+    "java.format.settings.url": "eclipse-formatter.xml",
+    "[java]": {
+        "editor.detectIndentation": false
+    }
 }

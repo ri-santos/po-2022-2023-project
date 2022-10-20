@@ -11,8 +11,6 @@ public class BasicTerminal extends Terminal{
         return super.toString();
     }
 
-
-
     public void makeVideoCall(Terminal to){}
 
     protected void acceptVideoCall(Terminal from){}
