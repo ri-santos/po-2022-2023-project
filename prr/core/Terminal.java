@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  * Abstract terminal.
  */
-abstract public class Terminal implements Serializable /* FIXME maybe addd more interfaces */{
+abstract public class Terminal implements Serializable{
 
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202208091753L;

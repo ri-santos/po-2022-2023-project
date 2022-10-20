@@ -2,15 +2,7 @@ package prr.core.exception;
 
 public class InvalidTerminalIdException extends Exception {
 
-    private final String _id;
-
-    public InvalidTerminalIdException(String id){
+    public InvalidTerminalIdException(){
         super();
-        _id = id;
     }
-
-    public String getId(){
-        return _id;
-    }
-    
 }

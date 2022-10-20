@@ -1,12 +1,10 @@
 package prr.app.terminals;
 
 import prr.core.Network;
-import prr.core.exception.InvalidTerminalIdException;
 import prr.core.exception.TerminalDoesNotExistException;
 import prr.app.exception.UnknownTerminalKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-//FIXME add mode import if needed
 
 /**
  * Open a specific terminal's menu.

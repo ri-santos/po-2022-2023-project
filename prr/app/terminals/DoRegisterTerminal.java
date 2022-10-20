@@ -9,7 +9,6 @@ import prr.app.exception.InvalidTerminalKeyException;
 import prr.app.exception.UnknownClientKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-//FIXME add more imports if needed
 
 /**
  * Register terminal.
@@ -21,16 +20,11 @@ class DoRegisterTerminal extends Command<Network> {
     addStringField("terminalId", Message.terminalKey());
     addOptionField("type", Message.terminalType(), "BASIC", "FANCY");
     addStringField("keyClient", Message.clientKey());
-
-  //invalidar   idTer invalido ou ja esta a ser utilizado
-
-
-    //FIXME add command fields
   }
 
   @Override
   protected final void execute() throws CommandException, UnknownClientKeyException, InvalidTerminalKeyException, DuplicateTerminalKeyException {
-    //FIXME implement command
+
     String terminalId = stringField("terminalId");
     String type = optionField("type");
     String keyClient = stringField("keyClient");
@@ -38,13 +32,13 @@ class DoRegisterTerminal extends Command<Network> {
     try{
       _receiver.registerTerminal(type, terminalId, keyClient);
     } catch(DuplicateKeyException e){
-      throw new DuplicateTerminalKeyException(e.getKey());
+      throw new DuplicateTerminalKeyException(terminalId);
 
     } catch(ClientDoesNotExistException e){
-      throw new UnknownClientKeyException(e.getKey());
+      throw new UnknownClientKeyException(keyClient);
 
     } catch(InvalidTerminalIdException e){
-      throw new InvalidTerminalKeyException(e.getId());
+      throw new InvalidTerminalKeyException(terminalId);
     }
   }
 }

@@ -12,11 +12,11 @@ public class Client implements Serializable{
     private int _taxNumber;
     private ClientLevel _clientLevel;
     private boolean _recieveNotifications;
-    private HashSet<Terminal> _terminals;
+    private TreeMap<String, Terminal> _terminals;
     private TariffPlan _tariff;
     private double _payments;
     private double _debts;
-    private List<Notification> _notifications;
+    private ArrayList<Notification> _notifications;
 
 
     public Client(String key, String name, int taxNumber){
@@ -25,7 +25,7 @@ public class Client implements Serializable{
         _taxNumber = taxNumber;
         _clientLevel = ClientLevel.NORMAL;
         _recieveNotifications = true;
-        _terminals = new HashSet<Terminal>();
+        _terminals = new TreeMap<String, Terminal>();
         _tariff = new TariffPlan("Base");
         _payments = 0;
         _debts = 0;
@@ -44,8 +44,8 @@ public class Client implements Serializable{
         return _taxNumber;
     }
 
-    public void addClientTerminal(Terminal terminal){
-        _terminals.add(terminal);
+    public void addClientTerminal(Terminal terminal, String id){
+        _terminals.put(id, terminal);
     }
 
     public void turnNotificationsOn(){
@@ -54,6 +54,10 @@ public class Client implements Serializable{
 
     public void turnNotificationsOff(){
         _recieveNotifications = false;
+    }
+
+    public ArrayList<Notification> getNotifications(){
+        return _notifications;
     }
 
     public String toString(){

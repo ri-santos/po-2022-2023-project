@@ -5,7 +5,6 @@ import prr.core.exception.ClientDoesNotExistException;
 import prr.app.exception.UnknownClientKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-//FIXME add more imports if needed
 
 /**
  * Show specific client: also show previous notifications.
@@ -15,7 +14,6 @@ class DoShowClient extends Command<Network> {
   DoShowClient(Network receiver) {
     super(Label.SHOW_CLIENT, receiver);
     addStringField("key", Message.key());
-    //FIXME add command fields
   }
   
   @Override
@@ -23,10 +21,10 @@ class DoShowClient extends Command<Network> {
     String key = stringField("key");
     try{
       _display.addLine(_receiver.showClient(key));
+      _display.addAll(_receiver.showNotifications(key));
     } catch(ClientDoesNotExistException e){
-      throw new UnknownClientKeyException(e.getKey());
+      throw new UnknownClientKeyException(key);
     }
     _display.display();
-    //FIXME implement command
   }
 }

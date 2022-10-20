@@ -9,7 +9,6 @@ import javax.sound.midi.Receiver;
 import prr.app.exception.DuplicateClientKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-//FIXME add more imports if needed
 
 /**
  * Register new client.
@@ -25,7 +24,6 @@ class DoRegisterClient extends Command<Network> {
   
   @Override
   protected final void execute() throws CommandException, DuplicateClientKeyException{
-    //FIXME implement command
     String key = stringField("key");
     String name = stringField("name");
     int taxNum = integerField("taxNumber");
@@ -33,7 +31,7 @@ class DoRegisterClient extends Command<Network> {
     try{
     _receiver.registerClient(key, name, taxNum);
     }catch (DuplicateKeyException e){
-      throw new DuplicateClientKeyException(e.getKey());
+      throw new DuplicateClientKeyException(key);
     }
   }
 }

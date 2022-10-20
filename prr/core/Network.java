@@ -47,7 +47,7 @@ public class Network implements Serializable {
     if (getClient(key) == null){
       _clients.put(key, newClient);
     }
-    else throw new DuplicateKeyException(key);
+    else throw new DuplicateKeyException();
   }
 
   private Client getClient(String key){
@@ -63,7 +63,7 @@ public class Network implements Serializable {
     Client client = getClient(key);
     if(client != null){
       return client;
-    }else throw new ClientDoesNotExistException(key);
+    }else throw new ClientDoesNotExistException();
   }
 
   public Collection<String> showAllClients(){
@@ -79,28 +79,40 @@ public class Network implements Serializable {
     return client.toString();
   }
 
+  public Collection<String> showNotifications(String key) throws ClientDoesNotExistException{
+    Client client = getExistingClient(key);
+    Collection<String> notifications = new ArrayList<String>();
+    for (Notification notification : client.getNotifications()){
+      notifications.add(notification.toString());
+    }
+    return notifications;
+  }
 
   public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
     Client owner = getExistingClient(clientKey);
-    if (id.length()!= 6){
-        throw new InvalidTerminalIdException(id);
-    }
-    else if(getTerminal(id) == null){
-        switch(type){
+    
+    if (id.length()!= 6){throw new InvalidTerminalIdException();}
+
+    else if (getTerminal(id) == null){
+      
+      switch(type){
         case "BASIC":
         Terminal newBasicTerminal = new BasicTerminal(id, owner);
         addTerminal(id, newBasicTerminal, owner);
+        break;
         
         case "FANCY":
         Terminal newFancyTerminal = new FancyTerminal(id, owner);
         addTerminal(id, newFancyTerminal, owner);
+        break;
         }
-    } else throw new DuplicateKeyException(id);
+        
+      } else throw new DuplicateKeyException();
   }
-  
+    
   public void addTerminal(String id, Terminal newTerminal, Client owner){
     _terminals.put(id, newTerminal);
-    owner.addClientTerminal(newTerminal);
+    owner.addClientTerminal(newTerminal, id);
   }
 
   public Terminal getTerminal(String id){

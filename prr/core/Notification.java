@@ -9,6 +9,6 @@ public class Notification {
     }
 
     public String toString(){
-        return (_type + _notifyingTerminal.getId());
+        return (_type + "|" + _notifyingTerminal.getId());
     }
 }
