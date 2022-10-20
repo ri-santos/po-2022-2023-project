@@ -95,8 +95,7 @@ public class Network implements Serializable {
         Terminal newFancyTerminal = new FancyTerminal(id, owner);
         addTerminal(id, newFancyTerminal, owner);
         }
-    }
-    else throw new DuplicateKeyException(id);
+    } else throw new DuplicateKeyException(id);
   }
   
   public void addTerminal(String id, Terminal newTerminal, Client owner){
