@@ -1,6 +1,7 @@
 package prr.core;
 
 import java.io.Serializable;
+import java.text.CollationElementIterator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
@@ -63,8 +64,8 @@ public class Network implements Serializable {
     }else throw new ClientDoesNotExistException();
   }
 
-  public List<Client> getClients(){
-    return Collections.unmodifiableList(new ArrayList<Client>(_clients.values()));
+  public Collection<Client> getClients(){
+    return Collections.unmodifiableCollection(_clients.values());
   }
 
   public String showClient(String key) throws ClientDoesNotExistException{
@@ -72,9 +73,9 @@ public class Network implements Serializable {
     return client.toString();
   }
 
-  public List<Notification> showNotifications(String key) throws ClientDoesNotExistException{
+  public Collection<Notification> showNotifications(String key) throws ClientDoesNotExistException{
     Client client = getExistingClient(key);
-    return Collections.unmodifiableList(new ArrayList<Notification>(client.getNotifications()));
+    return Collections.unmodifiableCollection(client.getNotifications());
   }
 
   public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
@@ -110,7 +111,6 @@ public class Network implements Serializable {
 
   public Collection<Terminal> getTerminals(){
     return _terminals.values();
-    
   }
 
   public Terminal openTerminalMenu(String id) throws TerminalDoesNotExistException{
@@ -118,7 +118,7 @@ public class Network implements Serializable {
   }
 
   public Collection<Terminal> showAllTerminals(){
-    return Collections.unmodifiableList(new ArrayList<>(getTerminals()));
+    return Collections.unmodifiableCollection(getTerminals());
   }
 
   public Collection<String> showAllUnusedTerminals(){
