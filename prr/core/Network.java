@@ -32,11 +32,6 @@ public class Network implements Serializable {
  */
   private TreeMap<String, Terminal> _terminals;
 
-/** 
- * Description of TariffPlan TreeMap 
- */
-  private HashSet<TariffPlan> _tariffPlans;
-
 
 /**
  * Constructor for class Network: create TreeMaps for each attribute.
@@ -45,7 +40,6 @@ public class Network implements Serializable {
   public Network(){
     _clients = new TreeMap<String, Client>();
     _terminals = new TreeMap<String, Terminal>();
-    _tariffPlans = new HashSet<TariffPlan>();
   }
 
 
@@ -289,17 +283,5 @@ public class Network implements Serializable {
     Terminal friendTerminal = getExistingTerminal(friend);
     addToTerminal.addNewFriend(friendTerminal, friend);
   }
-
-
-/**
- * Gets tariff plans.
- *
- * @return return all tariff plans from _tariffPlans.
- */
-  
-  public Collection<TariffPlan> getTariffPlans(){
-    return _tariffPlans;
-  }
-  
 }
 

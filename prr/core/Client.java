@@ -13,7 +13,6 @@ public class Client implements Serializable{
     private ClientLevel _clientLevel;
     private boolean _recieveNotifications;
     private TreeMap<String, Terminal> _terminals;
-    private TariffPlan _tariff;
     private double _payments;
     private double _debts;
     private ArrayList<Notification> _notifications;
@@ -26,7 +25,6 @@ public class Client implements Serializable{
         _clientLevel = ClientLevel.NORMAL;
         _recieveNotifications = true;
         _terminals = new TreeMap<String, Terminal>();
-        _tariff = new TariffPlan("Base");
         _payments = 0;
         _debts = 0;
         _notifications = new ArrayList<Notification>();
