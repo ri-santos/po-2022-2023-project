@@ -16,6 +16,8 @@ class DoTurnOnTerminal extends TerminalCommand {
   
   @Override
   protected final void execute() throws CommandException {
-    //FIXME implement command
+    if(!_network.setTerminalIdle(_receiver)){
+        _display.popup(Message.alreadyOn());
+    }
   }
 }

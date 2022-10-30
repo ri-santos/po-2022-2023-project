@@ -1,7 +1,7 @@
 package prr.app.terminals;
 
 import prr.core.exception.InvalidTerminalIdException;
-import prr.core.exception.ClientDoesNotExistException;
+import prr.core.exception.UnknownKeyException;
 import prr.core.exception.DuplicateKeyException;
 import prr.core.Network;
 import prr.app.exception.DuplicateTerminalKeyException;
@@ -34,7 +34,7 @@ class DoRegisterTerminal extends Command<Network> {
     } catch(DuplicateKeyException e){
       throw new DuplicateTerminalKeyException(e.getKey());
 
-    } catch(ClientDoesNotExistException e){
+    } catch(UnknownKeyException e){
       throw new UnknownClientKeyException(e.getKey());
 
     } catch(InvalidTerminalIdException e){

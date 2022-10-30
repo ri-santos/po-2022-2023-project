@@ -68,7 +68,7 @@ public class Parser {
       }
     } catch (InvalidTerminalIdException e) {
       throw new UnrecognizedEntryException("Invalid specification: " + line, e);
-    } catch (ClientDoesNotExistException e) {
+    } catch (UnknownKeyException e) {
       throw new UnrecognizedEntryException("Invalid specification: " + line, e);
     } catch (DuplicateKeyException e) {
       throw new UnrecognizedEntryException("Invalid specification: " + line, e);
@@ -80,12 +80,12 @@ public class Parser {
     checkComponentsLength(components, 3, line);
       
     try {
-      String terminal = components[1];
       String[] friends = components[2].split(",");
+      Terminal terminalToAdd = _network.getExistingTerminal(components[1]);
       
       for (String friend : friends)
-        _network.addFriend(terminal, friend);
-    } catch (TerminalDoesNotExistException e) {
+        _network.addFriend(terminalToAdd, friend);
+    } catch (UnknownKeyException e) {
       throw new UnrecognizedEntryException("Some message error in line:  " + line, e);
     }
   }

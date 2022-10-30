@@ -2,7 +2,7 @@ package prr.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Collection;
 
 
@@ -20,11 +20,11 @@ abstract public class Terminal implements Serializable{
   private double _payments;
   private TerminalMode _mode;
   private String _terminalType;
-  private HashMap<String, Terminal> _friends;
-  private HashMap<String, Client> _toNotify;
+  private TreeMap<String, Terminal> _friends;
+  private TreeMap<String, Client> _toNotify;
   private Communication _ongoingCommunication;
-  private HashMap<Integer, Communication> _madeCommunications;
-  private HashMap<Integer, Communication> _receivedCommunications;
+  private TreeMap<Integer, Communication> _madeCommunications;
+  private TreeMap<Integer, Communication> _receivedCommunications;
 
   
   public Terminal(String id, Client owner){
@@ -33,10 +33,10 @@ abstract public class Terminal implements Serializable{
     _mode = TerminalMode.IDLE;
     _debt = 0;
     _payments = 0;
-    _friends = new HashMap<String, Terminal>();
-    _toNotify = new HashMap<String, Client>();
-    _madeCommunications = new HashMap<Integer, Communication>();
-    _receivedCommunications = new HashMap<Integer, Communication>();
+    _friends = new TreeMap<String, Terminal>();
+    _toNotify = new TreeMap<String, Client>();
+    _madeCommunications = new TreeMap<Integer, Communication>();
+    _receivedCommunications = new TreeMap<Integer, Communication>();
   }
 
   public String getId(){
@@ -65,11 +65,6 @@ abstract public class Terminal implements Serializable{
 
   public void setTerminalType(String type){
     _terminalType = type;
-  }
-
-  public String toString(){
-    return (_terminalType + "|" + getId() + "|" + getOwner().getKey() + "|" + _mode + "|" + 
-    (long)_payments + "|" + (long)_debt);
   }
 
   public Collection<Communication> getMadeCommunications(){
@@ -107,8 +102,16 @@ abstract public class Terminal implements Serializable{
     _mode = TerminalMode.OFF;
   }
 
+  public void setBusy(){
+    _mode = TerminalMode.BUSY;
+  }
+
   public void addNewFriend(Terminal friend, String id){
     _friends.put(id, friend);
+  }
+
+  public void removeFriend(String id){
+    _friends.remove(id);
   }
 
   /**
@@ -129,6 +132,24 @@ abstract public class Terminal implements Serializable{
   public boolean canStartCommunication() {
     return (_mode != TerminalMode.OFF | _mode != TerminalMode.BUSY);
   }
+
+  public void recieveTextCommunication(int id,Communication comm){
+    _receivedCommunications.put(id,comm);
+  }
+
+  public void sendTextCommunication(int id, Communication comm){
+    _madeCommunications.put(id, comm);
+  }
+
+  public String toString(){
+    String terminalString = _terminalType + "|" + getId() + "|" + getOwner().getKey() + "|" + _mode + "|" + 
+    (long)_payments + "|" + (long)_debt;
+
+    if (_friends.size() != 0){
+      String friendIds = String.join(",",_friends.keySet());
+      terminalString += "|" + friendIds;
+    }
+
+    return terminalString;
+  }
 }
-
-

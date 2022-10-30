@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.TreeMap;
+import java.util.HashMap;
 import java.io.IOException;
 
 import prr.core.exception.*;
@@ -22,9 +24,9 @@ public class Network implements Serializable {
   private static final long serialVersionUID = 202208091753L;
 
 /**
- * Client TreeMap that stores the registered Clients
+ * Client HashMap that stores the registered Clients
  */
-  private TreeMap<String, Client> _clients;
+  private HashMap<String, Client> _clients;
 
 /** 
  * Terminal TreeMap that stores the registered Terminals
@@ -32,12 +34,14 @@ public class Network implements Serializable {
   private TreeMap<String, Terminal> _terminals;
 
 
+  private TreeMap<Integer, Communication> _communications;
+
 /**
- * Constructor for class Network: initiates each atribute's TreeMap.
+ * Constructor for class Network: initiates each atribute's Collection.
  */
 
   public Network(){
-    _clients = new TreeMap<String, Client>();
+    _clients = new HashMap<String, Client>();
     _terminals = new TreeMap<String, Terminal>();
   }
 
@@ -74,24 +78,39 @@ public class Network implements Serializable {
  * @return unmodifiable collection of all the clients.
  */
 
-  public Collection<Client> getClients(){
-    return Collections.unmodifiableCollection(_clients.values());
+  public List<Client> getClients(){
+    return new ArrayList<>(_clients.values());
   }
 
+  public List<Client> getClientsWithDebts(){
+    List<Client> clientsDebts = new ArrayList<>();
+    for (Client client : _clients.values()){
+      if(client.getDebts() != 0){clientsDebts.add(client);}
+    }
+    return clientsDebts;
+  }
+
+  public List<Client> getClientsWithoutDebts(){
+    List<Client> clientsDebts = new ArrayList<>();
+    for (Client client : _clients.values()){
+      if(client.getDebts() == 0){clientsDebts.add(client);}
+    }
+    return clientsDebts;
+  }
 
 /**
  * Check if  the Network has a client associated with a key.
  * 
  * @param key key of the Client.
- * @throws ClientDoesNotExistException if Client does not exist.
+ * @throws UnknownKeyException if Client does not exist.
  * @return if Client exist return it.
  */
 
-  public Client getExistingClient(String key) throws ClientDoesNotExistException{
+  public Client getExistingClient(String key) throws UnknownKeyException{
     Client client = getClient(key);
     if(client != null){
       return client;
-    }else throw new ClientDoesNotExistException(key);
+    }else throw new UnknownKeyException(key);
   }
 
 
@@ -117,11 +136,11 @@ public class Network implements Serializable {
  * Show Client associated with a key.
  *
  * @param key key of the Client.
- * @throws ClientDoesNotExistException if the Client does not exist.
+ * @throws UnknownKeyException if the Client does not exist.
  * @return show Client with that key. 
  */
 
- public String showClient(String key) throws ClientDoesNotExistException{
+  public String showClient(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
     return client.toString();
   }
@@ -131,13 +150,35 @@ public class Network implements Serializable {
  * Show a Client's Notifications.
  *
  * @param key key of the Client.
- * @throws ClientDoesNotExistException if the Client does not exist.
+ * @throws UnknownKeyException if the Client does not exist.
  * @return show all Notifications related with that Client. 
  */
 
-  public Collection<Notification> showNotifications(String key) throws ClientDoesNotExistException{
+  public Collection<Notification> showNotifications(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
     return Collections.unmodifiableCollection(client.getNotifications());
+  }
+
+  public boolean enableClientNotifications(String key) throws UnknownKeyException{
+    Client client = getExistingClient(key);
+    if (client.getRecieveNotificationsState() == true){
+      return false;
+    }
+    client.turnNotificationsOn();
+    return true;
+  }
+
+  public boolean disableClientNotifications(String key) throws UnknownKeyException{
+    Client client = getExistingClient(key);
+    if (client.getRecieveNotificationsState() == false){
+      return false;
+    }
+    client.turnNotificationsOff();
+    return true;
+  }
+
+  public void showClientPaymentsAndDebts(String key) throws UnknownKeyException{
+    Client client = getExistingClient(key);
   }
 
 
@@ -182,14 +223,14 @@ public class Network implements Serializable {
  * @param id id of the Terminal.
  * @param clientKey key of the Client.
  * @throws InvalidTerminalIdException if Terminal s id is not a valid code.
- * @throws ClientDoesNotExistException if Client does not exist.
+ * @throws UnknownKeyException if Client does not exist.
  * @throws DuplicateKeyException if there is a Terminal with the same key code.
  */
 
-  public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, ClientDoesNotExistException, DuplicateKeyException{
+  public void registerTerminal(String type, String id, String clientKey) throws InvalidTerminalIdException, UnknownKeyException, DuplicateKeyException{
     Client owner = getExistingClient(clientKey);
     
-    if (id.length()!= 6){throw new InvalidTerminalIdException(id);}
+    if (!id.matches("[0-9]+") | id.length() != 6){throw new InvalidTerminalIdException(id);}
 
     else if (getTerminal(id) == null){
       
@@ -227,11 +268,11 @@ public class Network implements Serializable {
  * Open a Terminal's console menu.
  *
  * @param id id of the Terminal.
- * @throws TerminalDoesNotExistException TerminalDoesNotExistException is thrown when that id of the Terminal does not exist.
+ * @throws UnknownKeyException UnknownKeyException is thrown when that id of the Terminal does not exist.
  * @return if Terminal exists will return it.
  */
 
-  public Terminal openTerminalMenu(String id) throws TerminalDoesNotExistException{
+  public Terminal openTerminalMenu(String id) throws UnknownKeyException{
       return getExistingTerminal(id);
   }
 
@@ -240,15 +281,15 @@ public class Network implements Serializable {
  * Gets an existing Terminal.
  *
  * @param id id of the Terminal.
- * @throws TerminalDoesNotExistException TerminalDoesNotExistException is thrown when that id of the Terminal does not exist.
+ * @throws UnknownKeyException UnknownKeyException is thrown when that id of the Terminal does not exist.
  * @return if the Terminal exists will return it.
  */
 
-  public Terminal getExistingTerminal(String id) throws TerminalDoesNotExistException{
+  public Terminal getExistingTerminal(String id) throws UnknownKeyException{
     Terminal terminal = getTerminal(id);
     if(terminal != null){
       return terminal;
-    }else throw new TerminalDoesNotExistException(id);
+    }else throw new UnknownKeyException(id);
   }
 
 
@@ -274,13 +315,70 @@ public class Network implements Serializable {
  *
  * @param terminal id of the terminal.
  * @param friend id of the terminal friend.
- * @throws TerminalDoesNotExistException if a terminal with the specified id does not exist.
+ * @throws UnknownKeyException if a terminal with the specified id does not exist.
  */
 
-  public void addFriend(String terminal, String friend) throws TerminalDoesNotExistException{
-    Terminal addToTerminal = getExistingTerminal(terminal);
-    Terminal friendTerminal = getExistingTerminal(friend);
-    addToTerminal.addNewFriend(friendTerminal, friend);
-  }
-}
 
+  public void addFriend(Terminal terminal, String friend) throws UnknownKeyException{
+    Terminal friendTerminal = getExistingTerminal(friend);
+    terminal.addNewFriend(friendTerminal, friend);
+  }
+
+
+  public void removeFriend(Terminal terminal, String friend) throws UnknownKeyException{
+    Terminal friendTerminal = getExistingTerminal(friend);
+    terminal.removeFriend(friend);
+  }
+
+
+  public boolean setTerminalIdle(Terminal terminal){
+    if(terminal.getMode() == TerminalMode.IDLE){
+      return false;
+    }
+      terminal.setOnIdle();
+    return true;
+  }
+
+
+  public boolean setTerminalOff(Terminal terminal){
+    if(terminal.getMode() == TerminalMode.OFF){
+      return false;
+    }
+      terminal.turnOff();
+    return true;
+  }
+
+
+  public boolean setTerminalSilence(Terminal terminal){
+    if(terminal.getMode() == TerminalMode.SILENCE){
+      return false;
+    }
+      terminal.setOnSilent();
+    return true;
+  }
+
+
+  public boolean sendTextCommunication(Terminal from, String to, String message) throws UnknownKeyException{
+    Terminal destTerminal = getExistingTerminal(to);
+    if(destTerminal.canStartCommunication()){
+      int id = _communications.size() + 1;
+      Communication textComm = new TextCommunication(message, id, from, destTerminal);
+      _communications.put(id, textComm);
+      from.recieveTextCommunication(id, textComm);
+      destTerminal.sendTextCommunication(id, textComm);
+      return true;
+    }
+    return false;
+  }
+
+  public boolean makeInteractiveCommunication(Terminal from, String to, String type) throws UnknownKeyException{
+    Terminal destTerminal = getExistingTerminal(to);
+    if(destTerminal.canStartCommunication()){
+      switch(type){
+        case "VIDEO":
+          
+      }
+    }
+  }
+
+}

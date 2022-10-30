@@ -12,8 +12,7 @@ abstract public class Communication implements Serializable{
 
     private int _id;
     private boolean _isPaid;
-    private double _cost;
-    private boolean _isOngoing;
+    protected double _cost;
     private Terminal _from;
     private Terminal _to;
     private String CommunicationType;
@@ -22,7 +21,6 @@ abstract public class Communication implements Serializable{
         _id = id;
         _isPaid = false;
         _cost = 0;
-        _isOngoing = false;
         _from = from;
         _to = to;
     }
@@ -38,8 +36,8 @@ abstract public class Communication implements Serializable{
         return _cost;
     }
 
-    public boolean isOngoing(){
-        return _isOngoing;
-    }
 
+    abstract public void computeCost();
+
+    abstract public int getSize();
 }

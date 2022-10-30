@@ -1,7 +1,7 @@
 package prr.app.client;
 
 import prr.core.Network;
-import prr.core.exception.ClientDoesNotExistException;
+import prr.core.exception.UnknownKeyException;
 import prr.app.exception.UnknownClientKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -22,7 +22,7 @@ class DoShowClient extends Command<Network> {
     try{
       _display.addLine(_receiver.showClient(key));
       _display.addAll(_receiver.showNotifications(key));
-    } catch(ClientDoesNotExistException e){
+    } catch(UnknownKeyException e){
       throw new UnknownClientKeyException(e.getKey());
     }
     _display.display();

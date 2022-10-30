@@ -1,7 +1,7 @@
 package prr.app.terminals;
 
 import prr.core.Network;
-import prr.core.exception.TerminalDoesNotExistException;
+import prr.core.exception.UnknownKeyException;
 import prr.app.exception.UnknownTerminalKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -21,8 +21,8 @@ class DoOpenMenuTerminalConsole extends Command<Network> {
     String id = stringField("id");
     try{
       (new prr.app.terminal.Menu(_receiver, _receiver.openTerminalMenu(id))).open();
-    } catch(TerminalDoesNotExistException e){
-      throw new UnknownTerminalKeyException(e.getId());
+    } catch(UnknownKeyException e){
+      throw new UnknownTerminalKeyException(e.getKey());
     }
   }
 }

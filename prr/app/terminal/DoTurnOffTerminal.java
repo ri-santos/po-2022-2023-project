@@ -16,6 +16,8 @@ class DoTurnOffTerminal extends TerminalCommand {
   
   @Override
   protected final void execute() throws CommandException {
-    //FIXME implement command
+    if(!_network.setTerminalOff(_receiver)){
+        _display.popup(Message.alreadyOff());
+    }
   }
 }
