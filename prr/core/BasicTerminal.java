@@ -1,17 +1,24 @@
 package prr.core;
 
+import prr.core.exception.UnsupportedAtDestinationException;
+import prr.core.exception.UnsupportedAtOriginException;
+
 public class BasicTerminal extends Terminal{
 
     public BasicTerminal(String id, Client owner){
         super(id, owner);
-        super.setTerminalType("BASIC");
     }
 
     public String toString(){
-        return super.toString();
+        return "BASIC" + super.toString();
     }
 
-    public void makeVideoCall(Terminal to){}
+    public void makeVideoCall(Terminal to, Communication comm) throws UnsupportedAtOriginException{
+        throw new UnsupportedAtOriginException();
+    }
 
-    protected void acceptVideoCall(Terminal from){}
+    @Override
+    public void acceptVideoCall() throws UnsupportedAtDestinationException {
+        throw new UnsupportedAtDestinationException();
+    }
 }

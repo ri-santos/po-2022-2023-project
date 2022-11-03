@@ -1,10 +1,20 @@
 package prr.core;
 
 public class VideoCommunication extends InteractiveCommunication{
-    public VideoCommunication(int duration , int id , Terminal from , Terminal to){
-        super(id, from, to);
-    }
-  
-    @Override
-    public void computeCost(){}
+  public VideoCommunication(int id , Terminal from , Terminal to){
+    super(id, from, to);
+  }
+
+  @Override
+  public double computeCost(){
+    double cost = getFrom().getOwner().getClientLevel().videoCost(getSize());
+    if(getFrom().isFriend(getIdReceiver())){cost /= 2;}
+    _cost = cost;
+    return cost;
+  }
+
+  @Override
+  public String toString(){
+    return "VIDEO|" + super.toString();
+  }
 }

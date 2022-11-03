@@ -1,0 +1,19 @@
+*** tests/A-12-12-M-ok.out	2022-10-30 22:15:44.000000000 +0000
+--- tests/A-12-12-M-ok.outhyp	2022-11-03 00:46:16.708125257 +0000
+***************
+*** 34,40 ****
+  10 - Terminar comunicação activa
+  11 - Mostrar comunicação em curso
+  0 - Sair
+! Escolha uma opção: VIDEO|1|969013|969011|0|0|ONGOING
+  OPERAÇÕES DO TERMINAL
+  1 - Ligar
+  2 - Colocar no silêncio
+--- 34,40 ----
+  10 - Terminar comunicação activa
+  11 - Mostrar comunicação em curso
+  0 - Sair
+! Escolha uma opção: VOICE|1|969013|969011|0|0|ONGOING
+  OPERAÇÕES DO TERMINAL
+  1 - Ligar
+  2 - Colocar no silêncio

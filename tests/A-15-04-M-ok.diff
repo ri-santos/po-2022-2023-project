@@ -1,0 +1,36 @@
+*** tests/A-15-04-M-ok.out	2022-10-30 22:17:10.000000000 +0000
+--- tests/A-15-04-M-ok.outhyp	2022-11-03 00:46:18.012131464 +0000
+***************
+*** 40,46 ****
+  10 - Terminar comunicação activa
+  11 - Mostrar comunicação em curso
+  0 - Sair
+! Escolha uma opção: Duração da comunicação (em minutos): Custo da comunicação: 200 unidades.
+  OPERAÇÕES DO TERMINAL
+  1 - Ligar
+  2 - Colocar no silêncio
+--- 40,46 ----
+  10 - Terminar comunicação activa
+  11 - Mostrar comunicação em curso
+  0 - Sair
+! Escolha uma opção: Duração da comunicação (em minutos): Custo da comunicação: 300 unidades.
+  OPERAÇÕES DO TERMINAL
+  1 - Ligar
+  2 - Colocar no silêncio
+***************
+*** 81,87 ****
+  10 - Terminar comunicação activa
+  11 - Mostrar comunicação em curso
+  0 - Sair
+! Escolha uma opção: Duração da comunicação (em minutos): Custo da comunicação: 800 unidades.
+  OPERAÇÕES DO TERMINAL
+  1 - Ligar
+  2 - Colocar no silêncio
+--- 81,87 ----
+  10 - Terminar comunicação activa
+  11 - Mostrar comunicação em curso
+  0 - Sair
+! Escolha uma opção: Duração da comunicação (em minutos): Custo da comunicação: 1200 unidades.
+  OPERAÇÕES DO TERMINAL
+  1 - Ligar
+  2 - Colocar no silêncio

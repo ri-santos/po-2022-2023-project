@@ -13,10 +13,13 @@ class DoEndInteractiveCommunication extends TerminalCommand {
 
   DoEndInteractiveCommunication(Network context, Terminal terminal) {
     super(Label.END_INTERACTIVE_COMMUNICATION, context, terminal, receiver -> receiver.canEndCurrentCommunication());
+    addIntegerField("duration", Message.duration());
   }
   
   @Override
-  protected final void execute() throws CommandException {
-    //FIXME implement command
+  protected final void execute() throws CommandException{
+    int duration = integerField("duration");
+    Double cost = _network.endInteractiveCommunication(_receiver,duration);
+    _display.popup(Message.communicationCost(Math.round(cost)));
   }
 }

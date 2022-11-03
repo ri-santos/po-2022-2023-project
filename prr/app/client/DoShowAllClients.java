@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import prr.core.Client;
-import prr.core.CompareByKey;
 import prr.core.Network;
+import prr.core.comparators.CompareByKey;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 

@@ -22,7 +22,7 @@ public class Client implements Serializable{
     _key = key;
     _name = name;
     _taxNumber = taxNumber;
-    _clientLevel = ClientLevel.NORMAL;
+    _clientLevel = new ClientLevelNormal();
     _recieveNotifications = true;
     _terminals = new TreeMap<String, Terminal>();
     _payments = 0;
@@ -40,6 +40,10 @@ public class Client implements Serializable{
 
   public int getTaxNumber(){
     return _taxNumber;
+  }
+
+  public ClientLevel getClientLevel(){
+    return _clientLevel;
   }
 
   public void addClientTerminal(Terminal terminal, String id){
@@ -65,10 +69,22 @@ public class Client implements Serializable{
     return _notifications;
   }
 
+  public Collection<Communication> getMadeCommunications(){
+    Collection<Communication> madeComms = new ArrayList<>();
+    _terminals.values().forEach(t -> madeComms.addAll(t.getMadeCommunications()));
+    return madeComms;
+  }
+
+  public Collection<Communication> getReceivedCommunications(){
+    Collection<Communication> receivedComms = new ArrayList<>();
+    _terminals.values().forEach(t -> receivedComms.addAll(t.getReceivedCommunications()));
+    return receivedComms;
+  }
+
   public String toString(){
     return ("CLIENT|" + _key + "|" + _name + "|" + _taxNumber + "|" + 
-    _clientLevel + "|" + (_recieveNotifications? "YES":"NO") + "|" + _terminals.size() + "|" +
-    (long)_payments + "|" + (long)_debts);
+    _clientLevel.toString() + "|" + (_recieveNotifications? "YES":"NO") + "|" + _terminals.size() + "|" +
+    Math.round(_payments) + "|" + Math.round(_debts));
   }
 }
 

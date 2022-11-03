@@ -4,14 +4,14 @@ public class FancyTerminal extends Terminal {
     
     public FancyTerminal(String id, Client owner){
         super(id, owner);
-        super.setTerminalType("FANCY");
     }
 
     public String toString(){
-        return super.toString();
+        return "FANCY" + super.toString();
     }
 
-    public void makeVideoCall(Terminal to){}
+    @Override
+    public void makeVideoCall(Terminal to, Communication comm){}
 
-    protected void acceptVideoCall(Terminal from){}
+    public void acceptVideoCall(){}
 }

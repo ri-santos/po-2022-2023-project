@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.HashMap;
 import java.io.IOException;
 
+import prr.core.TerminalState.TerminalMode;
 import prr.core.exception.*;
 
 
@@ -43,6 +44,7 @@ public class Network implements Serializable {
   public Network(){
     _clients = new HashMap<String, Client>();
     _terminals = new TreeMap<String, Terminal>();
+    _communications = new TreeMap<Integer, Communication>();
   }
 
 
@@ -181,6 +183,16 @@ public class Network implements Serializable {
     Client client = getExistingClient(key);
   }
 
+  public Collection<Communication> showCommunicationsFromClient(String key) throws UnknownKeyException{
+    Client client = getExistingClient(key);
+    return Collections.unmodifiableCollection(client.getMadeCommunications());
+  }
+
+  public Collection<Communication> showCommunicationsToClient(String key) throws UnknownKeyException{
+    Client client = getExistingClient(key);
+    return Collections.unmodifiableCollection(client.getReceivedCommunications());
+  }
+
 
 /**
  * Gets a Terminal from  _terminals.
@@ -309,6 +321,19 @@ public class Network implements Serializable {
     return unusedTerminals;
   }
 
+  public Collection<String> showTerminalsPositiveBalance(){
+    Collection<String> positiveTerminals = new ArrayList<String>();
+    for (Terminal terminal : getTerminals()){
+      if (terminal.getBalance() > 0){
+        positiveTerminals.add(terminal.toString());
+      }
+    }
+    return positiveTerminals;
+  }
+
+  public double showTerminalBalance(Terminal terminal){
+    return terminal.getBalance();
+  }
 
 /**
  * Add a new friend for a Terminal.
@@ -326,13 +351,13 @@ public class Network implements Serializable {
 
 
   public void removeFriend(Terminal terminal, String friend) throws UnknownKeyException{
-    Terminal friendTerminal = getExistingTerminal(friend);
+    getExistingTerminal(friend);
     terminal.removeFriend(friend);
   }
 
 
   public boolean setTerminalIdle(Terminal terminal){
-    if(terminal.getMode() == TerminalMode.IDLE){
+    if(terminal.getMode() == "IDLE"){
       return false;
     }
       terminal.setOnIdle();
@@ -341,7 +366,7 @@ public class Network implements Serializable {
 
 
   public boolean setTerminalOff(Terminal terminal){
-    if(terminal.getMode() == TerminalMode.OFF){
+    if(terminal.getMode() == "OFF"){
       return false;
     }
       terminal.turnOff();
@@ -350,35 +375,65 @@ public class Network implements Serializable {
 
 
   public boolean setTerminalSilence(Terminal terminal){
-    if(terminal.getMode() == TerminalMode.SILENCE){
+    if(terminal.getMode() == "SILENCE"){
       return false;
     }
       terminal.setOnSilent();
     return true;
   }
 
-
-  public boolean sendTextCommunication(Terminal from, String to, String message) throws UnknownKeyException{
-    Terminal destTerminal = getExistingTerminal(to);
-    if(destTerminal.canStartCommunication()){
-      int id = _communications.size() + 1;
-      Communication textComm = new TextCommunication(message, id, from, destTerminal);
-      _communications.put(id, textComm);
-      from.recieveTextCommunication(id, textComm);
-      destTerminal.sendTextCommunication(id, textComm);
-      return true;
-    }
-    return false;
+  public Collection<Communication> getCommunications(){
+    return _communications.values();
   }
 
-  public boolean makeInteractiveCommunication(Terminal from, String to, String type) throws UnknownKeyException{
+  public Collection<Communication> showAllCommunications(){
+    return Collections.unmodifiableCollection(getCommunications());
+  }
+
+  /*public boolean isCommunicationFrom(int id , Terminal from){
+
+
+  }*/
+  public void sendTextCommunication(Terminal from, String to, String message) throws UnknownKeyException, DestinationTerminalIsOffException{
     Terminal destTerminal = getExistingTerminal(to);
-    if(destTerminal.canStartCommunication()){
-      switch(type){
-        case "VIDEO":
-          
-      }
+    int id = _communications.size() + 1;
+    Communication textComm = new TextCommunication(message, id, from, destTerminal);
+    from.makeSMS(destTerminal, textComm);
+    _communications.put(id, textComm);
+  }
+
+  public void makeInteractiveCommunication (Terminal from, String to, String type) throws UnknownKeyException, UnsupportedAtDestinationException, UnsupportedAtOriginException,
+  DestinationTerminalIsBusyException, DestinationTerminalIsOffException, DestinationTerminalisSilentException{
+    Terminal destTerminal = getExistingTerminal(to);
+    Communication newComm;
+    int id = _communications.size() + 1;
+    switch(type){
+      case "VIDEO":
+      newComm = new VideoCommunication(id, from, destTerminal);
+      from.makeVideoCall(destTerminal, newComm);
+      
+      case "VOICE":
+      newComm = new VoiceCommunication(id, from, destTerminal);
+      from.makeVoiceCall(destTerminal, newComm);
     }
   }
 
+  public String showOngoingCommunication(Terminal from){
+		return from.getOngoingCommunication().toString();
+  }
+
+	public boolean isTerminalFrom(Terminal terminal){
+		return (terminal.getOngoingCommunication().getIdSender() == terminal.getId()
+		&& terminal.hasOngoingCommunication());
+	}
+
+	public double endInteractiveCommunication(Terminal terminal, int duration){
+    Communication communication = terminal.getOngoingCommunication();
+    String destTerminalId = communication.getIdReceiver();
+    Terminal destTerminal = getTerminal(destTerminalId);
+    destTerminal.endOngoingCommunication();
+    terminal.endOngoingCommunication();
+    communication.setSize(duration);
+    return communication.computeCost();
+	}
 }

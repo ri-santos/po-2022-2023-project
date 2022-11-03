@@ -7,13 +7,19 @@ public class TextCommunication extends Communication{
   public TextCommunication(String message, int id, Terminal from, Terminal to){
     super(id,from,to);
     _message = message;
+    _size = message.length();
   }
 
   @Override
-  public int getSize(){
-    return _message.length();
+  public double computeCost(){
+    double cost = getFrom().getOwner().getClientLevel().textCost(_size);
+    if(getFrom().isFriend(getIdReceiver())){cost /= 2;}
+    _cost = cost;
+    return cost;
   }
 
   @Override
-  public void computeCost(){}
+  public String toString(){
+    return "TEXT|" + super.toString();
+  }
 }

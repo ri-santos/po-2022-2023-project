@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import prr.core.Client;
-import prr.core.CompareByKey;
 import prr.core.Network;
+import prr.core.comparators.CompareByDebts;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -21,7 +21,7 @@ class DoShowClientsWithDebts extends Command<Network> {
   @Override
   protected final void execute() throws CommandException {
     List<Client> clients = _receiver.getClientsWithDebts();
-    Collections.sort(clients, new CompareByKey());
+    Collections.sort(clients, Collections.reverseOrder(new CompareByDebts()));
     _display.addAll(clients);
     _display.display();
   }

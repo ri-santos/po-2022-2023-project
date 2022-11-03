@@ -16,6 +16,10 @@ class DoShowOngoingCommunication extends TerminalCommand {
   
   @Override
   protected final void execute() throws CommandException {
-    //FIXME implement command
+    if(_receiver.hasOngoingCommunication()){
+      _display.popup(_network.showOngoingCommunication(_receiver));
+    }else{
+      _display.popup(Message.noOngoingCommunication());
+	}
   }
 }

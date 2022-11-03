@@ -17,5 +17,6 @@ class DoShowTerminalBalance extends TerminalCommand {
   @Override
   protected final void execute() throws CommandException {
     //FIXME implement command
+    _display.popup(Math.round(_network.showTerminalBalance(_receiver)));
   }
 }
