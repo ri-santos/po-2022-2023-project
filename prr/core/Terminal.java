@@ -2,7 +2,6 @@ package prr.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -17,7 +16,6 @@ import prr.core.exception.DestinationTerminalisSilentException;
 import prr.core.exception.UnsupportedAtDestinationException;
 import prr.core.exception.UnsupportedAtOriginException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 

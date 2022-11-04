@@ -2,16 +2,10 @@ package prr.app.terminal;
 
 import prr.core.Network;
 import prr.core.Terminal;
-import prr.core.exception.DestinationTerminalIsBusyException;
-import prr.core.exception.DestinationTerminalIsOffException;
-import prr.core.exception.DestinationTerminalisSilentException;
-import prr.core.exception.UnknownKeyException;
-import prr.core.exception.UnsupportedAtDestinationException;
-import prr.core.exception.UnsupportedAtOriginException;
+import prr.core.exception.*;
 import prr.app.exception.UnknownTerminalKeyException;
 import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.CommandException;
-//FIXME add more imports if needed
 
 /**
  * Command for starting communication.
