@@ -7,7 +7,7 @@ public class VideoCommunication extends InteractiveCommunication{
 
   @Override
   public double computeCost(){
-    double cost = getFrom().getOwner().getClientLevel().videoCost(getSize());
+    double cost = getFrom().getOwner().getClientLevel().videoCost(_size);
     if(getFrom().isFriend(getIdReceiver())){cost /= 2;}
     _cost = cost;
     return cost;

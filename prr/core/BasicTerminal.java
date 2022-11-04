@@ -18,7 +18,7 @@ public class BasicTerminal extends Terminal{
     }
 
     @Override
-    public void acceptVideoCall() throws UnsupportedAtDestinationException {
+    public void acceptVideoCall(Communication comm) throws UnsupportedAtDestinationException {
         throw new UnsupportedAtDestinationException();
     }
 }

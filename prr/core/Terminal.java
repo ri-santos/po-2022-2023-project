@@ -2,6 +2,8 @@ package prr.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import prr.core.TerminalState.BusyMode;
@@ -15,6 +17,7 @@ import prr.core.exception.DestinationTerminalisSilentException;
 import prr.core.exception.UnsupportedAtDestinationException;
 import prr.core.exception.UnsupportedAtOriginException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -31,8 +34,9 @@ abstract public class Terminal implements Serializable{
   private double _debt;
   private double _payments;
   private TerminalMode _mode;
+  private TerminalMode _lastmode;
   private TreeMap<String, Terminal> _friends;
-  private TreeMap<String, Client> _toNotify;
+  private Set<Client> _toNotify;
   private Communication _onGoingCommunication;
   private TreeMap<Integer, Communication> _madeCommunications;
   private TreeMap<Integer, Communication> _receivedCommunications;
@@ -43,7 +47,7 @@ abstract public class Terminal implements Serializable{
     _owner = owner;
     _mode = new IdleMode();
     _friends = new TreeMap<String, Terminal>();
-    _toNotify = new TreeMap<String, Client>();
+    _toNotify = new HashSet<Client>();
     _madeCommunications = new TreeMap<Integer, Communication>();
     _receivedCommunications = new TreeMap<Integer, Communication>();
   }
@@ -56,8 +60,8 @@ abstract public class Terminal implements Serializable{
     return _owner;
   }
 
-  public String getMode(){
-    return _mode.toString();
+  public TerminalMode getMode(){
+    return _mode;
   }
 
   public Double getDebts(){
@@ -104,25 +108,37 @@ abstract public class Terminal implements Serializable{
   }
 
   public void setOnSilent(){
+    _lastmode = _mode;
     _mode = new SilenceMode();
+    if (_lastmode.toString().equals("OFF")){notifyClients();}
   }
 
   public void setOnIdle(){
+    _lastmode = _mode;
     _mode = new IdleMode();
+    notifyClients();
   }
 
   public void turnOff(){
+    _lastmode = _mode;
     _mode = new OffMode();
   }
 
   public void setBusy(){
+    _lastmode = _mode;
     _mode = new BusyMode();
   }
 
-  public void endOngoingCommunication(){
+  public void endOngoingCommunicationFrom(){
+    _debt += _onGoingCommunication.computeCost();
+    endOngoingCommunicationTo();
+  }
+
+  public void endOngoingCommunicationTo(){
     _onGoingCommunication._isOngoing = false;
     _onGoingCommunication = null;
-    setOnIdle();
+    _mode = _lastmode;
+    _lastmode = new BusyMode();
   }
 
   public void setOngoingCommunication(Communication newCommunication){
@@ -144,6 +160,35 @@ abstract public class Terminal implements Serializable{
 
   public boolean isFriend(String id){
     return _friends.containsKey(id);
+  }
+
+  public void addNotifyClient(Client client){
+    _toNotify.add(client);
+  }
+
+  public void notifyClients(){
+    String type = (_lastmode.toString() + "to" + _mode.toString());
+    Notification notification = new Notification(type, this);
+    _toNotify.forEach(client -> client.update(notification));
+    _toNotify.clear();
+  }
+
+  public boolean doPayment(int key){
+    Communication comm = _madeCommunications.get(key);
+    if (comm.getFrom() == this){
+      double price = comm.getCost();
+      _payments += price;
+      _debt -= price;
+      verifyClientLevelChange(_owner);
+      return true;
+    }
+    return false;
+  }
+
+  public void verifyClientLevelChange(Client c){
+    c.setPayments();
+    c.setDebts();
+    c.getClientLevel().upgradeLevel(c);
   }
 
   /**
@@ -189,18 +234,20 @@ abstract public class Terminal implements Serializable{
   public void makeSMS(Terminal to, Communication comm) throws DestinationTerminalIsOffException{
     to._mode.acceptSMS();
     addMadeCommunication(comm);
+    _debt += comm.computeCost();
     to.addReceivedCommunication(comm);
 
   }
 
   public void makeVoiceCall(Terminal to, Communication comm) throws DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException{
-    to._mode.acceptInteractive();
     setOngoingCommunication(comm);
+    addMadeCommunication(comm);
     to.setOngoingCommunication(comm);
+    to.addMadeCommunication(comm);
   }
 
-  public abstract void makeVideoCall(Terminal to, Communication comm) throws UnsupportedAtOriginException;
+  public abstract void makeVideoCall(Terminal to, Communication comm) throws UnsupportedAtDestinationException, UnsupportedAtOriginException, DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException;
 
-  public abstract void acceptVideoCall() throws UnsupportedAtDestinationException;
+  public abstract void acceptVideoCall(Communication comm) throws UnsupportedAtDestinationException;
 
 }

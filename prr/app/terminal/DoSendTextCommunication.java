@@ -28,6 +28,7 @@ class DoSendTextCommunication extends TerminalCommand {
     }catch (UnknownKeyException e){
       throw new UnknownTerminalKeyException(e.getKey());
     }catch (DestinationTerminalIsOffException e){
+      _network.addNotifyClient(_receiver, id);
       _display.popup(Message.destinationIsOff(id));
     }
   }

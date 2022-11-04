@@ -16,7 +16,7 @@ class DoShowTerminalBalance extends TerminalCommand {
   
   @Override
   protected final void execute() throws CommandException {
-    //FIXME implement command
-    _display.popup(Math.round(_network.showTerminalBalance(_receiver)));
+    
+    _display.popup(Message.terminalPaymentsAndDebts(_receiver.getId(), Math.round(_receiver.getPayments()), Math.round(_receiver.getDebts())));
   }
 }

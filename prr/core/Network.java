@@ -9,7 +9,6 @@ import java.util.TreeMap;
 import java.util.HashMap;
 import java.io.IOException;
 
-import prr.core.TerminalState.TerminalMode;
 import prr.core.exception.*;
 
 
@@ -37,6 +36,10 @@ public class Network implements Serializable {
 
   private TreeMap<Integer, Communication> _communications;
 
+  private double _payments;
+
+  private double _debts;
+
 /**
  * Constructor for class Network: initiates each atribute's Collection.
  */
@@ -61,6 +64,15 @@ public class Network implements Serializable {
     parser.parseFile(filename);
   }
 
+  public double getGlobalPayments(){
+    _clients.values().forEach(c -> _payments += c.getPayments());
+    return _payments;
+  }
+
+  public double getGlobalDebts(){
+    _clients.values().forEach(c -> _debts += c.getPayments());
+    return _debts;
+  }
 
 /**
  * Gets the Client associated with a specific key.
@@ -156,9 +168,11 @@ public class Network implements Serializable {
  * @return show all Notifications related with that Client. 
  */
 
-  public Collection<Notification> showNotifications(String key) throws UnknownKeyException{
+  public List<DeliveryType> showNotifications(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
-    return Collections.unmodifiableCollection(client.getNotifications());
+    List<DeliveryType> inbox = new ArrayList<>(client.getInbox());
+    client.clearInbox();
+    return Collections.unmodifiableList(inbox);
   }
 
   public boolean enableClientNotifications(String key) throws UnknownKeyException{
@@ -179,13 +193,19 @@ public class Network implements Serializable {
     return true;
   }
 
-  public void showClientPaymentsAndDebts(String key) throws UnknownKeyException{
+  public double showClientPayments(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
+    return client.getPayments();
   }
 
-  public Collection<Communication> showCommunicationsFromClient(String key) throws UnknownKeyException{
+  public double showClientDebt(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
-    return Collections.unmodifiableCollection(client.getMadeCommunications());
+    return client.getDebts();
+  }
+
+  public List<Communication> showCommunicationsFromClient(String key) throws UnknownKeyException{
+    Client client = getExistingClient(key);
+    return Collections.unmodifiableList(client.getMadeCommunications());
   }
 
   public Collection<Communication> showCommunicationsToClient(String key) throws UnknownKeyException{
@@ -346,7 +366,9 @@ public class Network implements Serializable {
 
   public void addFriend(Terminal terminal, String friend) throws UnknownKeyException{
     Terminal friendTerminal = getExistingTerminal(friend);
-    terminal.addNewFriend(friendTerminal, friend);
+    if(friendTerminal != terminal){
+      terminal.addNewFriend(friendTerminal, friend);
+    }
   }
 
 
@@ -357,7 +379,7 @@ public class Network implements Serializable {
 
 
   public boolean setTerminalIdle(Terminal terminal){
-    if(terminal.getMode() == "IDLE"){
+    if(terminal.getMode().toString() == "IDLE"){
       return false;
     }
       terminal.setOnIdle();
@@ -366,7 +388,7 @@ public class Network implements Serializable {
 
 
   public boolean setTerminalOff(Terminal terminal){
-    if(terminal.getMode() == "OFF"){
+    if(terminal.getMode().toString() == "OFF"){
       return false;
     }
       terminal.turnOff();
@@ -375,7 +397,7 @@ public class Network implements Serializable {
 
 
   public boolean setTerminalSilence(Terminal terminal){
-    if(terminal.getMode() == "SILENCE"){
+    if(terminal.getMode().toString() == "SILENCE"){
       return false;
     }
       terminal.setOnSilent();
@@ -400,6 +422,8 @@ public class Network implements Serializable {
     Communication textComm = new TextCommunication(message, id, from, destTerminal);
     from.makeSMS(destTerminal, textComm);
     _communications.put(id, textComm);
+    from.getOwner().getClientLevel().setToNormal(from.getOwner());
+    from.getOwner().getClientLevel().downgradeLevel(from.getOwner());
   }
 
   public void makeInteractiveCommunication (Terminal from, String to, String type) throws UnknownKeyException, UnsupportedAtDestinationException, UnsupportedAtOriginException,
@@ -407,19 +431,26 @@ public class Network implements Serializable {
     Terminal destTerminal = getExistingTerminal(to);
     Communication newComm;
     int id = _communications.size() + 1;
+    destTerminal.getMode().acceptInteractive();
     switch(type){
       case "VIDEO":
       newComm = new VideoCommunication(id, from, destTerminal);
       from.makeVideoCall(destTerminal, newComm);
+      _communications.put(id, newComm);
+      break;
       
       case "VOICE":
       newComm = new VoiceCommunication(id, from, destTerminal);
       from.makeVoiceCall(destTerminal, newComm);
+      _communications.put(id, newComm);
+      break;
     }
+    from.getOwner().getClientLevel().setToNormal(from.getOwner());
+    from.getOwner().getClientLevel().upgradeLevel(from.getOwner());
   }
 
-  public String showOngoingCommunication(Terminal from){
-		return from.getOngoingCommunication().toString();
+  public Communication showOngoingCommunication(Terminal from){
+		return from.getOngoingCommunication();
   }
 
 	public boolean isTerminalFrom(Terminal terminal){
@@ -428,12 +459,21 @@ public class Network implements Serializable {
 	}
 
 	public double endInteractiveCommunication(Terminal terminal, int duration){
-    Communication communication = terminal.getOngoingCommunication();
-    String destTerminalId = communication.getIdReceiver();
-    Terminal destTerminal = getTerminal(destTerminalId);
-    destTerminal.endOngoingCommunication();
-    terminal.endOngoingCommunication();
-    communication.setSize(duration);
-    return communication.computeCost();
+		Communication communication = terminal.getOngoingCommunication();
+		String destTerminalId = communication.getIdReceiver();
+		Terminal destTerminal = getTerminal(destTerminalId);
+		communication.setSize(duration);
+		destTerminal.endOngoingCommunicationTo();
+		terminal.endOngoingCommunicationFrom();
+		communication.setnotOngoing();
+		return communication.computeCost();
 	}
+
+	public void addNotifyClient(Terminal from, String id){
+		Terminal destTerminal = getTerminal(id);
+		destTerminal.addNotifyClient(from.getOwner());
+	}
+
 }
+
+

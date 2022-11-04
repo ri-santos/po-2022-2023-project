@@ -49,6 +49,9 @@ abstract public class Communication implements Serializable{
     return _from;
   }
 
+  public void setnotOngoing(){
+    _isOngoing = false;
+  }
 
   public void setSize(int duration){
     _size = duration;
@@ -63,8 +66,6 @@ abstract public class Communication implements Serializable{
     _size + "|" + Math.round(getCost()) + "|" + (_isOngoing? "ONGOING" : "FINISHED");
   }
   
-
-
   abstract public double computeCost();
 
     

@@ -18,6 +18,18 @@ public class ClientLevelPlatinum extends ClientLevel {
     }
 
     @Override
+    public void upgradeLevel(Client c){}
+
+    @Override
+    public void downgradeLevel(Client c){
+        if(c.verifyLast2Text()){c.setLevel(new ClientLevelGold());}
+    }
+    @Override
+    public void setToNormal(Client c){
+        if(c.getPayments() - c.getDebts() < 0){ c.setLevel(new ClientLevelNormal());}
+    }
+
+    @Override
     public String toString(){
         return "PLATINUM";
     }

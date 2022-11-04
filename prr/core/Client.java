@@ -15,7 +15,8 @@ public class Client implements Serializable{
   private TreeMap<String, Terminal> _terminals;
   private double _payments;
   private double _debts;
-  private ArrayList<Notification> _notifications;
+  private List<DeliveryType> _inbox;
+  private int[] _history;
 
 
   public Client(String key, String name, int taxNumber){
@@ -27,7 +28,8 @@ public class Client implements Serializable{
     _terminals = new TreeMap<String, Terminal>();
     _payments = 0;
     _debts = 0;
-    _notifications = new ArrayList<Notification>();
+    _inbox = new ArrayList<DeliveryType>();
+    _history = new int[5];
   }
 
   public String getKey(){
@@ -65,12 +67,37 @@ public class Client implements Serializable{
     return _debts;
   }
 
-  public ArrayList<Notification> getNotifications(){
-    return _notifications;
+  public void setLevel(ClientLevel newLevel){
+    _clientLevel = newLevel;
+    clearHistory();
   }
 
-  public Collection<Communication> getMadeCommunications(){
-    Collection<Communication> madeComms = new ArrayList<>();
+  public double getPayments(){
+    return _payments;
+  }
+
+  public void clearInbox(){
+    _inbox.clear();
+  }
+
+  public void setPayments(){
+    _terminals.values().forEach(term -> _payments += term.getDebts());
+  }
+
+  public void setDebts(){
+    _terminals.values().forEach(term -> _debts += term.getDebts());
+  }
+
+  public List<DeliveryType> getInbox(){
+    return _inbox;
+  }
+  
+  public void update(DeliveryType mail){
+    if(_recieveNotifications){_inbox.add(mail);}
+  }
+
+  public List<Communication> getMadeCommunications(){
+    List<Communication> madeComms = new ArrayList<>();
     _terminals.values().forEach(t -> madeComms.addAll(t.getMadeCommunications()));
     return madeComms;
   }
@@ -79,6 +106,53 @@ public class Client implements Serializable{
     Collection<Communication> receivedComms = new ArrayList<>();
     _terminals.values().forEach(t -> receivedComms.addAll(t.getReceivedCommunications()));
     return receivedComms;
+  }
+
+  public void updateHistory(int last){
+    int i = 0;
+    while (i < 5){
+      if (_history[i] == 0){
+        _history[i] = last;
+        return;
+      }
+      else{i++;}
+    }
+    i = 0;
+    while (i < 4){
+      _history[i] = _history[i++];
+    }
+    _history[i] = last;
+  }
+
+  public void clearHistory(){
+    _history = new int[5];
+  }
+
+  public boolean verifyLast2Text(){
+    int i = 0;
+    while (i <= 5){
+      if (i == 5 | _history[i] == 0){
+        if (_history[i--] == 1 && _history[i--] == 1){
+          return true;
+        }
+        else{return false;}
+      }
+      else {i++;}
+    }
+  return false;
+
+  }
+
+  public boolean verifyLast5Video(){
+    int i = 0;
+    while (i < 5){
+      if (_history[i] != 3){
+        return false;
+      }
+      else {i++;}
+    }
+  return true;
+
   }
 
   public String toString(){

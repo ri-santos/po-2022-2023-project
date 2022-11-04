@@ -19,6 +19,19 @@ public class ClientLevelNormal extends ClientLevel {
     }
 
     @Override
+    public void upgradeLevel(Client c){
+      if(c.getPayments() - c.getDebts() > 500){
+        c.setLevel(new ClientLevelGold());
+      }    
+    }
+
+    @Override
+    public void downgradeLevel(Client c){}
+
+    @Override
+    public void setToNormal(Client c){}
+
+    @Override
     public String toString(){
         return "NORMAL";
     }

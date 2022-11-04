@@ -1,5 +1,10 @@
 package prr.core;
 
+import prr.core.exception.DestinationTerminalIsBusyException;
+import prr.core.exception.DestinationTerminalIsOffException;
+import prr.core.exception.DestinationTerminalisSilentException;
+import prr.core.exception.UnsupportedAtDestinationException;
+
 public class FancyTerminal extends Terminal {
     
     public FancyTerminal(String id, Client owner){
@@ -11,7 +16,13 @@ public class FancyTerminal extends Terminal {
     }
 
     @Override
-    public void makeVideoCall(Terminal to, Communication comm){}
+    public void makeVideoCall(Terminal to, Communication comm) throws DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException, UnsupportedAtDestinationException{
+        makeVoiceCall(to, comm);
+    }
+        
 
-    public void acceptVideoCall(){}
+    public void acceptVideoCall(Communication comm){
+        setOngoingCommunication(comm);
+        addReceivedCommunication(comm);
+    }
 }

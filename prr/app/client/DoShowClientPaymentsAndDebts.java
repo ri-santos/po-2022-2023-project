@@ -1,6 +1,7 @@
 package prr.app.client;
 
 import prr.core.Network;
+import prr.core.exception.UnknownKeyException;
 import prr.app.exception.UnknownClientKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -18,12 +19,13 @@ class DoShowClientPaymentsAndDebts extends Command<Network> {
   
   @Override
   protected final void execute() throws CommandException{ 
-  /*  
     try{
-
-        Message.clientPaymentsAndDebts(String key, long payments, long debts);
+        String key = stringField("key");
+        _display.popup(Message.clientPaymentsAndDebts(key, 
+        Math.round(_receiver.showClientPayments(key)), Math.round(_receiver.showClientDebt(key))));
         
-    }catch(ClientDoesNotExistException e){
-      throw new UnknownClientKeyException(e.getKey());*/
+    }catch(UnknownKeyException e){
+      throw new UnknownClientKeyException(e.getKey());}
   }
 }
+
