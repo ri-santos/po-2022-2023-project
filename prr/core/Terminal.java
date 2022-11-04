@@ -30,7 +30,7 @@ abstract public class Terminal implements Serializable{
   private static final long serialVersionUID = 202208091753L;
   
   private String _id;
-  private Client _owner;
+  protected Client _owner;
   private double _debt;
   private double _payments;
   private TerminalMode _mode;
@@ -108,20 +108,26 @@ abstract public class Terminal implements Serializable{
   }
 
   public void setOnSilent(){
-    _lastmode = _mode;
-    _mode = new SilenceMode();
-    if (_lastmode.toString().equals("OFF")){notifyClients();}
+    if(_onGoingCommunication == null){
+        _lastmode = _mode;
+        _mode = new SilenceMode();
+        if (_lastmode.toString().equals("OFF")){notifyClients();}
+    }
   }
 
   public void setOnIdle(){
-    _lastmode = _mode;
-    _mode = new IdleMode();
-    notifyClients();
+    if(_onGoingCommunication == null){
+        _lastmode = _mode;
+        _mode = new IdleMode();
+        notifyClients();
+    }
   }
 
   public void turnOff(){
-    _lastmode = _mode;
-    _mode = new OffMode();
+    if(_onGoingCommunication == null){
+        _lastmode = _mode;
+        _mode = new OffMode();
+    }
   }
 
   public void setBusy(){
@@ -132,6 +138,7 @@ abstract public class Terminal implements Serializable{
   public void endOngoingCommunicationFrom(){
     _debt += _onGoingCommunication.computeCost();
     endOngoingCommunicationTo();
+    _owner.verifyClientLevelChange();
   }
 
   public void endOngoingCommunicationTo(){
@@ -236,14 +243,20 @@ abstract public class Terminal implements Serializable{
     addMadeCommunication(comm);
     _debt += comm.computeCost();
     to.addReceivedCommunication(comm);
-
+    _owner.updateHistory(1);
+    _owner.verifyClientLevelChange();
   }
 
   public void makeVoiceCall(Terminal to, Communication comm) throws DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException{
+    _owner.updateHistory(2);
+    makeInteractiveCommunication(to, comm);
+  }
+
+  public void makeInteractiveCommunication(Terminal to, Communication comm) throws DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException{
     setOngoingCommunication(comm);
     addMadeCommunication(comm);
     to.setOngoingCommunication(comm);
-    to.addMadeCommunication(comm);
+    to.addReceivedCommunication(comm);
   }
 
   public abstract void makeVideoCall(Terminal to, Communication comm) throws UnsupportedAtDestinationException, UnsupportedAtOriginException, DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException;

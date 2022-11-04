@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.io.IOException;
 
 import prr.core.exception.*;
+import prr.core.filters.ClientFilter;
+import prr.core.filters.TerminalFilter;
 
 
 /**
@@ -33,12 +35,21 @@ public class Network implements Serializable {
  */
   private TreeMap<String, Terminal> _terminals;
 
-
+/** 
+ * Communication TreeMap that stores the registered Communications
+ */
   private TreeMap<Integer, Communication> _communications;
 
+/** 
+ * _payments attribute stores all Clients payments(global payments)
+ */
   private double _payments;
 
+/** 
+ * _debts attribute stores all Clients debts(global debts)
+ */
   private double _debts;
+
 
 /**
  * Constructor for class Network: initiates each atribute's Collection.
@@ -64,15 +75,30 @@ public class Network implements Serializable {
     parser.parseFile(filename);
   }
 
+
+/**
+ * Gets the global payments.
+ *
+ * @return the global payments associated with the Network.
+ */
+
   public double getGlobalPayments(){
     _clients.values().forEach(c -> _payments += c.getPayments());
     return _payments;
   }
 
+
+/**
+ * Gets the global debts.
+ *
+ * @return the global debts associated with the Network.
+ */
+
   public double getGlobalDebts(){
-    _clients.values().forEach(c -> _debts += c.getPayments());
+    _clients.values().forEach(c -> _debts += c.getDebts());
     return _debts;
   }
+
 
 /**
  * Gets the Client associated with a specific key.
@@ -92,25 +118,21 @@ public class Network implements Serializable {
  * @return unmodifiable collection of all the clients.
  */
 
-  public List<Client> getClients(){
-    return new ArrayList<>(_clients.values());
+  public Collection<Client> getClients(){
+    return Collections.unmodifiableCollection(_clients.values());
   }
 
-  public List<Client> getClientsWithDebts(){
-    List<Client> clientsDebts = new ArrayList<>();
-    for (Client client : _clients.values()){
-      if(client.getDebts() != 0){clientsDebts.add(client);}
-    }
-    return clientsDebts;
+
+/**
+ * Applies the selected filter on the clients list.
+ * 
+ * @return filtered list.
+ */
+
+  public List<Client> getClientsFiltered(ClientFilter f){
+    return Collections.unmodifiableList(f.apply(_clients.values()));
   }
 
-  public List<Client> getClientsWithoutDebts(){
-    List<Client> clientsDebts = new ArrayList<>();
-    for (Client client : _clients.values()){
-      if(client.getDebts() == 0){clientsDebts.add(client);}
-    }
-    return clientsDebts;
-  }
 
 /**
  * Check if  the Network has a client associated with a key.
@@ -175,6 +197,15 @@ public class Network implements Serializable {
     return Collections.unmodifiableList(inbox);
   }
 
+
+/**
+ * Turn Client's Notifications on.
+ *
+ * @param key key of the Client.
+ * @throws UnknownKeyException if the Client does not exist.
+ * @return a boolean related with the Notifications state associated with that Client. 
+ */
+
   public boolean enableClientNotifications(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
     if (client.getRecieveNotificationsState() == true){
@@ -183,6 +214,15 @@ public class Network implements Serializable {
     client.turnNotificationsOn();
     return true;
   }
+
+
+/**
+ * Turn Client's Notifications off.
+ *
+ * @param key key of the Client.
+ * @throws UnknownKeyException if the Client does not exist.
+ * @return a boolean related with the Notifications state associated with that Client. 
+ */
 
   public boolean disableClientNotifications(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
@@ -193,24 +233,60 @@ public class Network implements Serializable {
     return true;
   }
 
+
+/**
+ * Show payments associated with that Client.
+ *
+ * @param key key of the Client.
+ * @throws UnknownKeyException if the Client does not exist.
+ * @return show a payments related with that Client key. 
+ */
+
   public double showClientPayments(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
     return client.getPayments();
   }
+
+
+/**
+ * Show debts associated with that Client.
+ *
+ * @param key key of the Client.
+ * @throws UnknownKeyException if the Client does not exist.
+ * @return show a debts related with that Client key. 
+ */
 
   public double showClientDebt(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
     return client.getDebts();
   }
 
+
+/**
+ * Show made Communications from Client associated with that key.
+ *
+ * @param key key of the Client.
+ * @throws UnknownKeyException if the Client does not exist.
+ * @return a unmodifiable List with all made Communications from that Client.
+ */
+
   public List<Communication> showCommunicationsFromClient(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
     return Collections.unmodifiableList(client.getMadeCommunications());
   }
 
+
+/**
+ * Show Communications that Client with that key received.        
+ *
+ * @param key key of the Client.
+ * @throws UnknownKeyException if the Client does not exist.
+ * @return a unmodifiable List with all Communications that Client received.
+ */
+
   public Collection<Communication> showCommunicationsToClient(String key) throws UnknownKeyException{
     Client client = getExistingClient(key);
-    return Collections.unmodifiableCollection(client.getReceivedCommunications());
+    return Collections.unmodifiableList(client.getReceivedCommunications());
   }
 
 
@@ -220,7 +296,6 @@ public class Network implements Serializable {
  * @param id id of the Terminal.
  * @return the Terminal associated with that id.
  */
-
   public Terminal getTerminal(String id){
     return _terminals.get(id);
   }
@@ -326,34 +401,26 @@ public class Network implements Serializable {
 
 
 /**
- * Show all unused Terminal.
- *
- * @return string of the Terminals that haven't made or recieved any communications.
+ * Apllies the selected filter on the terminals list.
+ * 
+ * @return the filtered list.
  */
 
-  public Collection<String> showAllUnusedTerminals(){
-    Collection<String> unusedTerminals = new ArrayList<String>();
-    for (Terminal terminal : getTerminals()){
-      if (terminal.numberOfCommunications() == 0){
-        unusedTerminals.add(terminal.toString());
-      }
-    }
-    return unusedTerminals;
+  public Collection<Terminal> showTerminalsFiltered(TerminalFilter f){
+    return Collections.unmodifiableCollection(f.apply(getTerminals()));
   }
 
-  public Collection<String> showTerminalsPositiveBalance(){
-    Collection<String> positiveTerminals = new ArrayList<String>();
-    for (Terminal terminal : getTerminals()){
-      if (terminal.getBalance() > 0){
-        positiveTerminals.add(terminal.toString());
-      }
-    }
-    return positiveTerminals;
-  }
+  
+/**
+ * Show Terminal s balance.
+ *
+ * @return a Terminal balance.
+ */
 
   public double showTerminalBalance(Terminal terminal){
     return terminal.getBalance();
   }
+
 
 /**
  * Add a new friend for a Terminal.
@@ -363,7 +430,6 @@ public class Network implements Serializable {
  * @throws UnknownKeyException if a terminal with the specified id does not exist.
  */
 
-
   public void addFriend(Terminal terminal, String friend) throws UnknownKeyException{
     Terminal friendTerminal = getExistingTerminal(friend);
     if(friendTerminal != terminal){
@@ -372,11 +438,26 @@ public class Network implements Serializable {
   }
 
 
+/**
+ * Remove a friend form a Terminal s freinds.
+ *
+ * @param terminal id of the terminal.
+ * @param friend id of the terminal friend.
+ * @throws UnknownKeyException if a terminal with the specified id does not exist.
+ */
+
   public void removeFriend(Terminal terminal, String friend) throws UnknownKeyException{
     getExistingTerminal(friend);
     terminal.removeFriend(friend);
   }
 
+
+/**
+ * Set Terminal a IDLE mode.
+ *
+ * @param terminal id of the terminal.
+ * @return a boolean related with that Terminal mode.
+ */
 
   public boolean setTerminalIdle(Terminal terminal){
     if(terminal.getMode().toString() == "IDLE"){
@@ -387,6 +468,13 @@ public class Network implements Serializable {
   }
 
 
+/**
+ * Set for Terminal a OFF mode.
+ *
+ * @param terminal id of the terminal.
+ * @return a boolean related with that Terminal mode.
+ */
+
   public boolean setTerminalOff(Terminal terminal){
     if(terminal.getMode().toString() == "OFF"){
       return false;
@@ -396,6 +484,13 @@ public class Network implements Serializable {
   }
 
 
+/**
+ * Set for Terminal a SILENCE mode.
+ *
+ * @param terminal id of the terminal.
+ * @return a boolean related with that Terminal mode.
+ */
+
   public boolean setTerminalSilence(Terminal terminal){
     if(terminal.getMode().toString() == "SILENCE"){
       return false;
@@ -404,59 +499,124 @@ public class Network implements Serializable {
     return true;
   }
 
+
+/**
+ * Gets all existing Communication.
+ * 
+ * @return collection of all the Communication.
+ */
+
   public Collection<Communication> getCommunications(){
     return _communications.values();
   }
+
+
+/**
+ * Show all existing Communication.
+ * 
+ * @return unmodifiable list of the Communication registered in the Network.
+ */
 
   public Collection<Communication> showAllCommunications(){
     return Collections.unmodifiableCollection(getCommunications());
   }
 
+
+
   /*public boolean isCommunicationFrom(int id , Terminal from){
 
 
   }*/
+
+
+/**
+ * Send a Text Communication between two Terminals.
+ *
+ * @param from Terminal that sends the Communication.
+ * @param to id of the Terminal that will received that Communication.
+ * @throws UnknownKeyException if a Terminal with the specified id does not exist.
+ * @throws DestinationTerminalIsOffException if a destination Terminal is in a OFF mode,its not enable to receive that Communication.
+ */
+
   public void sendTextCommunication(Terminal from, String to, String message) throws UnknownKeyException, DestinationTerminalIsOffException{
     Terminal destTerminal = getExistingTerminal(to);
     int id = _communications.size() + 1;
     Communication textComm = new TextCommunication(message, id, from, destTerminal);
     from.makeSMS(destTerminal, textComm);
     _communications.put(id, textComm);
-    from.getOwner().getClientLevel().setToNormal(from.getOwner());
-    from.getOwner().getClientLevel().downgradeLevel(from.getOwner());
   }
+
+
+/**
+ * Make a Interactive Communication between two Terminals.
+ *
+ * @param from Terminal that sends the Communication.
+ * @param to id of the Terminal that will received that Communication.
+ * @param type type of the Interactive Communication.
+ * @throws UnknownKeyException if a Terminal with the specified id does not exist.
+ * @throws UnsupportedAtDestinationException if a destination Terminal doesnt support that type of Communication.
+ * @throws UnsupportedAtOriginException if a origin Terminal doesnt support that type of Communication.
+ * @throws DestinationTerminalIsBusyException if a destination Terminal in a BUSY mode.
+ * @throws DestinationTerminalIsOffException if a destination Terminal in a OFF mode.
+ * @throws DestinationTerminalisSilentException if a destination Terminal in a SILENCE mode.
+ */
 
   public void makeInteractiveCommunication (Terminal from, String to, String type) throws UnknownKeyException, UnsupportedAtDestinationException, UnsupportedAtOriginException,
   DestinationTerminalIsBusyException, DestinationTerminalIsOffException, DestinationTerminalisSilentException{
     Terminal destTerminal = getExistingTerminal(to);
-    Communication newComm;
-    int id = _communications.size() + 1;
-    destTerminal.getMode().acceptInteractive();
-    switch(type){
-      case "VIDEO":
-      newComm = new VideoCommunication(id, from, destTerminal);
-      from.makeVideoCall(destTerminal, newComm);
-      _communications.put(id, newComm);
-      break;
-      
-      case "VOICE":
-      newComm = new VoiceCommunication(id, from, destTerminal);
-      from.makeVoiceCall(destTerminal, newComm);
-      _communications.put(id, newComm);
-      break;
+    if (destTerminal != from){
+        Communication newComm;
+        int id = _communications.size() + 1;
+        destTerminal.getMode().acceptInteractive();
+        switch(type){
+            case "VIDEO":
+            newComm = new VideoCommunication(id, from, destTerminal);
+            from.makeVideoCall(destTerminal, newComm);
+            _communications.put(id, newComm);
+            break;
+            
+            case "VOICE":
+            newComm = new VoiceCommunication(id, from, destTerminal);
+            from.makeVoiceCall(destTerminal, newComm);
+            _communications.put(id, newComm);
+            break;
+        }
     }
-    from.getOwner().getClientLevel().setToNormal(from.getOwner());
-    from.getOwner().getClientLevel().upgradeLevel(from.getOwner());
+    else{throw new DestinationTerminalIsBusyException();}
   }
+
+
+/**
+ * Show Terminals ongoing Communication.
+ *
+ * @param from Terminal that made the Communication.
+ * @return ongoing Communication associated with that Terminal.
+ */
 
   public Communication showOngoingCommunication(Terminal from){
 		return from.getOngoingCommunication();
   }
 
+
+/**
+ * Check if the Terminal starts the ongoing Communication.
+ *
+ * @param from Terminal.
+ * @return if Terminal starts that Communication return true.
+ */
+
 	public boolean isTerminalFrom(Terminal terminal){
 		return (terminal.getOngoingCommunication().getIdSender() == terminal.getId()
 		&& terminal.hasOngoingCommunication());
 	}
+
+
+/**
+ * End an Interactive Communication ,safe that duration and calculate that cost.
+ *
+ * @param terminal Terminal that starts a Interactive Communication.
+ * @return a Communication s cost.
+ */
 
 	public double endInteractiveCommunication(Terminal terminal, int duration){
 		Communication communication = terminal.getOngoingCommunication();
@@ -469,11 +629,17 @@ public class Network implements Serializable {
 		return communication.computeCost();
 	}
 
+
+/**
+ * Add a Client to notify.
+ *
+ * @param from Terminal that wants start a Interactive Communication.
+ * @param id id of the Terminal that will received a Interactive Communication from Terminal from if had sucess.
+ */
+
 	public void addNotifyClient(Terminal from, String id){
 		Terminal destTerminal = getTerminal(id);
 		destTerminal.addNotifyClient(from.getOwner());
 	}
 
 }
-
-

@@ -1,6 +1,7 @@
 package prr.app.lookup;
 
 import prr.core.Network;
+import prr.core.filters.PositiveBalance;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 //FIXME add more imports if needed
@@ -16,7 +17,7 @@ class DoShowTerminalsWithPositiveBalance extends Command<Network> {
 
   @Override
   protected final void execute() throws CommandException {
-    _display.addAll(_receiver.showTerminalsPositiveBalance());
+    _display.addAll(_receiver.showTerminalsFiltered(new PositiveBalance()));
     _display.display();
   }
 }

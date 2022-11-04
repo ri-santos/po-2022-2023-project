@@ -21,7 +21,8 @@ class DoShowCommunicationsFromClient extends Command<Network> {
   protected final void execute() throws CommandException, UnknownClientKeyException {
     String key = stringField("key");
     try{
-        _receiver.showCommunicationsFromClient(key);
+        _display.addAll(_receiver.showCommunicationsFromClient(key));
+        _display.display();
     }catch (UnknownKeyException e){
         throw new UnknownClientKeyException(e.getKey());
     }

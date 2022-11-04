@@ -1,6 +1,7 @@
 package prr.app.lookup;
 
 import prr.core.Network;
+import prr.core.filters.UnusedTerminals;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -15,7 +16,7 @@ class DoShowUnusedTerminals extends Command<Network> {
 
   @Override
   protected final void execute() throws CommandException {
-    _display.addAll(_receiver.showAllUnusedTerminals());
+    _display.addAll(_receiver.showTerminalsFiltered(new UnusedTerminals()));
     _display.display();
   }
 }

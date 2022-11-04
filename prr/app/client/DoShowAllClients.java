@@ -1,5 +1,6 @@
 package prr.app.client;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +21,7 @@ class DoShowAllClients extends Command<Network> {
   
   @Override
   protected final void execute() throws CommandException {
-    List<Client> clients = _receiver.getClients();
+    List<Client> clients = new ArrayList<>(_receiver.getClients());
     Collections.sort(clients, new CompareByKey());
     _display.addAll(clients);
     _display.display();

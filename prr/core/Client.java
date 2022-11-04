@@ -64,6 +64,7 @@ public class Client implements Serializable{
     return _recieveNotifications;
   }
   public double getDebts(){
+    setDebts();
     return _debts;
   }
 
@@ -73,6 +74,7 @@ public class Client implements Serializable{
   }
 
   public double getPayments(){
+    setPayments();
     return _payments;
   }
 
@@ -81,10 +83,12 @@ public class Client implements Serializable{
   }
 
   public void setPayments(){
-    _terminals.values().forEach(term -> _payments += term.getDebts());
+    _payments = 0;
+    _terminals.values().forEach(term -> _payments += term.getPayments());
   }
 
   public void setDebts(){
+    _debts = 0;
     _terminals.values().forEach(term -> _debts += term.getDebts());
   }
 
@@ -102,8 +106,8 @@ public class Client implements Serializable{
     return madeComms;
   }
 
-  public Collection<Communication> getReceivedCommunications(){
-    Collection<Communication> receivedComms = new ArrayList<>();
+  public List<Communication> getReceivedCommunications(){
+    List<Communication> receivedComms = new ArrayList<>();
     _terminals.values().forEach(t -> receivedComms.addAll(t.getReceivedCommunications()));
     return receivedComms;
   }
@@ -128,16 +132,24 @@ public class Client implements Serializable{
     _history = new int[5];
   }
 
+  public void verifyClientLevelChange(){
+    _clientLevel.setToNormal(this);
+    _clientLevel.upgradeLevel(this);
+    _clientLevel.downgradeLevel(this);
+  }
+
   public boolean verifyLast2Text(){
-    int i = 0;
-    while (i <= 5){
-      if (i == 5 | _history[i] == 0){
-        if (_history[i--] == 1 && _history[i--] == 1){
+    int i1 = 1;
+    int i2 = 0;
+    while (i1 < 5){
+      if (_history[i1] == 1){
+        i2 = i1 + 1;
+        if (_history[i1--] == 1 && (_history[i2] == 0 | i2 == 5)){
           return true;
         }
         else{return false;}
       }
-      else {i++;}
+      else {i1++;}
     }
   return false;
 
@@ -158,7 +170,7 @@ public class Client implements Serializable{
   public String toString(){
     return ("CLIENT|" + _key + "|" + _name + "|" + _taxNumber + "|" + 
     _clientLevel.toString() + "|" + (_recieveNotifications? "YES":"NO") + "|" + _terminals.size() + "|" +
-    Math.round(_payments) + "|" + Math.round(_debts));
+    Math.round(getPayments()) + "|" + Math.round(getDebts()));
   }
 }
 
