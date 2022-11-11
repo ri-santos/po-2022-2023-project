@@ -3,7 +3,7 @@ package prr.core;
 public class ClientLevelPlatinum extends ClientLevel {
     @Override
     public double textCost(int duration){
-        if (duration < 50) {return 10;}
+        if (duration < 50) {return 0;}
         else {return 4;}
     }
 

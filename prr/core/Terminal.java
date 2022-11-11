@@ -135,10 +135,12 @@ abstract public class Terminal implements Serializable{
     _mode = new BusyMode();
   }
 
-  public void endOngoingCommunicationFrom(){
-    _debt += _onGoingCommunication.computeCost();
+  public double endOngoingCommunicationFrom(){
+    double cost = _onGoingCommunication.computeCost();
+    _debt += cost;
     endOngoingCommunicationTo();
     _owner.verifyClientLevelChange();
+    return cost;
   }
 
   public void endOngoingCommunicationTo(){
@@ -182,7 +184,7 @@ abstract public class Terminal implements Serializable{
 
   public boolean doPayment(int key){
     Communication comm = _madeCommunications.get(key);
-    if (comm.getFrom() == this){
+    if (comm !=null && comm.getFrom() == this){
       double price = comm.getCost();
       _payments += price;
       _debt -= price;

@@ -122,10 +122,14 @@ public class Client implements Serializable{
       else{i++;}
     }
     i = 0;
+    int i2 = 1;
     while (i < 4){
-      _history[i] = _history[i++];
+      int next = _history[i2];
+      _history[i] = next;
+      i++;
+      i2++;
     }
-    _history[i] = last;
+    _history[4] = last;
   }
 
   public void clearHistory(){
@@ -139,20 +143,15 @@ public class Client implements Serializable{
   }
 
   public boolean verifyLast2Text(){
-    int i1 = 1;
-    int i2 = 0;
-    while (i1 < 5){
-      if (_history[i1] == 1){
-        i2 = i1 + 1;
-        if (_history[i1--] == 1 && (_history[i2] == 0 | i2 == 5)){
-          return true;
-        }
-        else{return false;}
-      }
-      else {i1++;}
+    int i1 = 0;
+    int i2 = 1;
+    int next = 0;
+    while (i1 < 4){
+      next = _history[i2];
+      if (_history[i1] == 1 && next == 1){return true;}
+      else {i1++; i2++;}
     }
-  return false;
-
+    return false;
   }
 
   public boolean verifyLast5Video(){

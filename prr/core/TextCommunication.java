@@ -13,7 +13,6 @@ public class TextCommunication extends Communication{
   @Override
   public double computeCost(){
     double cost = getFrom().getOwner().getClientLevel().textCost(_size);
-    if(getFrom().isFriend(getIdReceiver())){cost /= 2;}
     _cost = cost;
     return cost;
   }

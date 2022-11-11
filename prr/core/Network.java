@@ -625,9 +625,8 @@ public class Network implements Serializable {
 		Terminal destTerminal = getTerminal(destTerminalId);
 		communication.setSize(duration);
 		destTerminal.endOngoingCommunicationTo();
-		terminal.endOngoingCommunicationFrom();
 		communication.setnotOngoing();
-		return communication.computeCost();
+		return terminal.endOngoingCommunicationFrom();
 	}
 
 
