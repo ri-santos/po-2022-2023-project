@@ -17,8 +17,9 @@ public class FancyTerminal extends Terminal {
 
     @Override
     public void makeVideoCall(Terminal to, Communication comm) throws DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException, UnsupportedAtDestinationException{
-        _owner.updateHistory(3);
+        to.acceptVideoCall(comm);
         makeInteractiveCommunication(to, comm);
+        _owner.updateHistory(3);
     }
         
 

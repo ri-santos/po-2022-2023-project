@@ -83,6 +83,7 @@ public class Network implements Serializable {
  */
 
   public double getGlobalPayments(){
+    _payments = 0;
     _clients.values().forEach(c -> _payments += c.getPayments());
     return _payments;
   }
@@ -95,6 +96,7 @@ public class Network implements Serializable {
  */
 
   public double getGlobalDebts(){
+    _debts = 0;
     _clients.values().forEach(c -> _debts += c.getDebts());
     return _debts;
   }
@@ -180,7 +182,6 @@ public class Network implements Serializable {
     Client client = getExistingClient(key);
     return client.toString();
   }
-
 
 /**
  * Show a Client's Notifications.

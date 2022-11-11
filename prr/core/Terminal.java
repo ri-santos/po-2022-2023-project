@@ -2,6 +2,7 @@ package prr.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -16,6 +17,7 @@ import prr.core.exception.DestinationTerminalisSilentException;
 import prr.core.exception.UnsupportedAtDestinationException;
 import prr.core.exception.UnsupportedAtOriginException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -248,13 +250,13 @@ abstract public class Terminal implements Serializable{
   public void makeVoiceCall(Terminal to, Communication comm) throws DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException{
     _owner.updateHistory(2);
     makeInteractiveCommunication(to, comm);
+    to.setOngoingCommunication(comm);
+    to.addReceivedCommunication(comm);
   }
 
   public void makeInteractiveCommunication(Terminal to, Communication comm) throws DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException{
     setOngoingCommunication(comm);
     addMadeCommunication(comm);
-    to.setOngoingCommunication(comm);
-    to.addReceivedCommunication(comm);
   }
 
   public abstract void makeVideoCall(Terminal to, Communication comm) throws UnsupportedAtDestinationException, UnsupportedAtOriginException, DestinationTerminalIsOffException, DestinationTerminalisSilentException, DestinationTerminalIsBusyException;
