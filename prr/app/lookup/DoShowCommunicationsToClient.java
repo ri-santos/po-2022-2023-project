@@ -1,7 +1,13 @@
 package prr.app.lookup;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import prr.app.exception.UnknownClientKeyException;
+import prr.core.Communication;
 import prr.core.Network;
+import prr.core.comparators.CompareByCommId;
 import prr.core.exception.UnknownKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -20,7 +26,9 @@ class DoShowCommunicationsToClient extends Command<Network> {
   protected final void execute() throws CommandException, UnknownClientKeyException {
     String key = stringField("key");
     try{
-        _display.addAll(_receiver.showCommunicationsToClient(key));
+        List<Communication> comms = new ArrayList<>(_receiver.showCommunicationsToClient(key));
+        Collections.sort(comms, new CompareByCommId());
+        _display.addAll(comms);
         _display.display();
     }catch (UnknownKeyException e){
         throw new UnknownClientKeyException(e.getKey());

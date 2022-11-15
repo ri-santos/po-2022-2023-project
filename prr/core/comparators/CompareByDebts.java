@@ -10,6 +10,6 @@ public class CompareByDebts implements Comparator<Client>{
 
         else if (c1.getDebts() < c2.getDebts()) return -1;
         
-        else return new CompareByKey().compare(c1, c2);
+        else return new CompareByKey().compare(c2, c1);
     }
 }

@@ -61,6 +61,10 @@ abstract public class Communication implements Serializable{
     return _isOngoing;
   }
 
+  public void setPaid(){
+    _isPaid = true;
+  }
+
   public String toString(){
     return getCommunicationId() + "|" + getIdSender() + "|" + getIdReceiver() + "|" +
     _size + "|" + Math.round(getCost()) + "|" + (_isOngoing? "ONGOING" : "FINISHED");

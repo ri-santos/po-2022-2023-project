@@ -140,6 +140,9 @@ abstract public class Terminal implements Serializable{
     _debt += cost;
     endOngoingCommunicationTo();
     _owner.verifyClientLevelChange();
+    if (!_mode.toString().equals("SILENCE")){
+      notifyClients();
+    }
     return cost;
   }
 
@@ -184,10 +187,11 @@ abstract public class Terminal implements Serializable{
 
   public boolean doPayment(int key){
     Communication comm = _madeCommunications.get(key);
-    if (comm !=null && comm.getFrom() == this){
+    if (comm != null && comm.getFrom() == this && !comm.getCommState() && !comm.isPaid()){
       double price = comm.getCost();
       _payments += price;
       _debt -= price;
+      comm.setPaid();
       verifyClientLevelChange(_owner);
       return true;
     }
